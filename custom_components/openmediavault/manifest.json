@@ -1,0 +1,11 @@
+{
+    "domain": "openmediavault",
+    "name": "openmediavault",
+    "config_flow": true,
+    "documentation": "https://github.com/tomaae/homeassistant-openmediavault",
+    "dependencies": [],
+    "requirements": [],
+    "codeowners": [
+        "@tomaae"
+    ]
+}

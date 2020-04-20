@@ -1,0 +1,9 @@
+{
+    "name": "openmediavault",
+    "homeassistant": "0.102.0",
+    "iot_class": "local_poll",
+    "domains": ["sensor"],
+    "render_readme": false,
+    "zip_release": true,
+    "filename": "openmediavault.zip"
+}
