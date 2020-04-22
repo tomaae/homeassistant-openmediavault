@@ -1,5 +1,5 @@
 {
-    "name": "openmediavault",
+    "name": "OpenMediaVault",
     "homeassistant": "0.102.0",
     "iot_class": "local_poll",
     "domains": ["sensor"],
