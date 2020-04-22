@@ -40,7 +40,6 @@ async def async_setup_entry(hass, config_entry):
     device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         manufacturer="OpenMediaVault",
-        # model=controller.data["hwinfo"]["model"],
         name=controller.data["hwinfo"]["hostname"],
         sw_version=controller.data["hwinfo"]["version"],
     )
