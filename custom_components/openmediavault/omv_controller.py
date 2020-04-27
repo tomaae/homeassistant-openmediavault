@@ -129,9 +129,13 @@ class OpenMediaVaultControllerData(object):
         )
 
         self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
-        mem = (
-            int(self.data["hwinfo"]["memUsed"]) / int(self.data["hwinfo"]["memTotal"])
-        ) * 100
+        if self.data["hwinfo"]["memTotal"] > 0:
+            mem = (
+                int(self.data["hwinfo"]["memUsed"])
+                / int(self.data["hwinfo"]["memTotal"])
+            ) * 100
+        else:
+            mem = 0
         self.data["hwinfo"]["memUsage"] = round(mem, 1)
 
     # ---------------------------
