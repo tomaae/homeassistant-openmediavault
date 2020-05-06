@@ -5,10 +5,26 @@ from time import time
 from threading import Lock
 import json
 import requests
+from pickle import dump as pickle_dump, load as pickle_load
+from os import path
 
 from voluptuous import Optional
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def load_cookies(filename: str) -> Optional(dict):
+    """Load cookies from file."""
+    if path.isfile(filename):
+        with open(filename, "rb") as f:
+            return pickle_load(f)
+    return None
+
+
+def save_cookies(filename: str, data: dict):
+    """Save cookies to file."""
+    with open(filename, "wb") as f:
+        pickle_dump(data, f)
 
 
 # ---------------------------
@@ -18,9 +34,10 @@ class OpenMediaVaultAPI(object):
     """Handle all communication with OMV."""
 
     def __init__(
-        self, host, username, password, use_ssl=False,
+        self, hass, host, username, password, use_ssl=False,
     ):
         """Initialize OMV API."""
+        self._hass = hass
         self._host = host
         self._use_ssl = use_ssl
         self._username = username
@@ -31,6 +48,8 @@ class OpenMediaVaultAPI(object):
         self.lock = Lock()
 
         self._connection = None
+        self._cookie_jar = None
+        self._cookie_jar_file = self._hass.config.path(".omv_cookies.json")
         self._connected = False
         self._reconnected = False
         self._connection_epoch = 0
@@ -96,6 +115,12 @@ class OpenMediaVaultAPI(object):
         self._connected = False
         self._connection_epoch = time()
         self._connection = requests.Session()
+        self._cookie_jar = requests.cookies.RequestsCookieJar()
+
+        # Load cookies
+        cookies = load_cookies(self._cookie_jar_file)
+        if cookies:
+            self._connection.cookies.update(cookies)
 
         self.lock.acquire()
         try:
@@ -113,6 +138,7 @@ class OpenMediaVaultAPI(object):
                 ),
             )
             data = response.json()
+
             if data["error"] is not None:
                 if not self.connection_error_reported:
                     _LOGGER.error(
@@ -153,6 +179,13 @@ class OpenMediaVaultAPI(object):
             self._connected = True
             self._reconnected = True
             self.lock.release()
+
+        # Save cookies
+        if self._connected:
+            for cookie in self._connection.cookies:
+                self._cookie_jar.set_cookie(cookie)
+
+            save_cookies(self._cookie_jar_file, self._cookie_jar)
 
         return self._connected
 

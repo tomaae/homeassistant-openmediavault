@@ -64,6 +64,7 @@ class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
 
             # Test connection
             api = OpenMediaVaultAPI(
+                self.hass,
                 host=user_input[CONF_HOST],
                 username=user_input[CONF_USERNAME],
                 password=user_input[CONF_PASSWORD],

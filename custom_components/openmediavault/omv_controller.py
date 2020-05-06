@@ -45,6 +45,7 @@ class OpenMediaVaultControllerData(object):
         self.lock = asyncio.Lock()
 
         self.api = OpenMediaVaultAPI(
+            hass,
             config_entry.data[CONF_HOST],
             config_entry.data[CONF_USERNAME],
             config_entry.data[CONF_PASSWORD],
