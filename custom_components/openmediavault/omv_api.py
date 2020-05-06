@@ -250,7 +250,10 @@ class OpenMediaVaultAPI(object):
                     if self.connect():
                         self.query(service, method, params, options)
 
-        except requests.exceptions.ConnectionError as api_error:
+        except (
+            requests.exceptions.ConnectionError,
+            json.decoder.JSONDecodeError,
+        ) as api_error:
             _LOGGER.warning("OpenMediaVault %s unable to fetch data", self._host)
             self.disconnect("query", api_error)
             self.lock.release()
