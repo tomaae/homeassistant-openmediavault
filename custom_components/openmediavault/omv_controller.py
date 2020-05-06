@@ -16,6 +16,7 @@ from homeassistant.const import (
     CONF_HOST,
     CONF_USERNAME,
     CONF_PASSWORD,
+    CONF_SSL,
 )
 
 from .const import DOMAIN
@@ -49,6 +50,7 @@ class OpenMediaVaultControllerData(object):
             config_entry.data[CONF_HOST],
             config_entry.data[CONF_USERNAME],
             config_entry.data[CONF_PASSWORD],
+            config_entry.data[CONF_SSL],
         )
 
         self._force_update_callback = None
@@ -126,7 +128,7 @@ class OpenMediaVaultControllerData(object):
                 {"name": "rebootRequired", "type": "bool", "default": False},
                 {"name": "pkgUpdatesAvailable", "type": "bool", "default": False},
             ],
-            ensure_vals=[{"name": "memUsage", "default": 0},],
+            ensure_vals=[{"name": "memUsage", "default": 0}],
         )
 
         self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
