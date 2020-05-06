@@ -12,6 +12,7 @@ from homeassistant.const import (
     CONF_HOST,
     CONF_USERNAME,
     CONF_PASSWORD,
+    CONF_SSL,
 )
 from homeassistant.core import callback
 
@@ -21,6 +22,7 @@ from .const import (
     DEFAULT_USERNAME,
     DEFAULT_PASSWORD,
     DEFAULT_DEVICE_NAME,
+    DEFAULT_SSL,
 )
 from .omv_api import OpenMediaVaultAPI
 
@@ -68,6 +70,7 @@ class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
                 host=user_input[CONF_HOST],
                 username=user_input[CONF_USERNAME],
                 password=user_input[CONF_PASSWORD],
+                use_ssl=user_input[CONF_SSL],
             )
             if not api.connect():
                 errors[CONF_HOST] = api.error
@@ -86,6 +89,7 @@ class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_HOST: DEFAULT_HOST,
                 CONF_USERNAME: DEFAULT_USERNAME,
                 CONF_PASSWORD: DEFAULT_PASSWORD,
+                CONF_SSL: DEFAULT_SSL,
             },
             errors=errors,
         )
@@ -103,6 +107,7 @@ class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_HOST, default=user_input[CONF_HOST]): str,
                     vol.Required(CONF_USERNAME, default=user_input[CONF_USERNAME]): str,
                     vol.Required(CONF_PASSWORD, default=user_input[CONF_PASSWORD]): str,
+                    vol.Optional(CONF_SSL, default=user_input[CONF_SSL]): bool,
                 }
             ),
             errors=errors,

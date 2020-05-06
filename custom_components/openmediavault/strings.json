@@ -9,7 +9,8 @@
                     "name": "Name of the integration",
                     "host": "Host",
                     "username": "Username",
-                    "password": "Password"
+                    "password": "Password",
+                    "ssl": "Use SSL"
                 }
             }
         },

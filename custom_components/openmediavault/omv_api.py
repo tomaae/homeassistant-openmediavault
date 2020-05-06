@@ -136,6 +136,7 @@ class OpenMediaVaultAPI(object):
                         },
                     }
                 ),
+                verify=False,
             )
             data = response.json()
 
@@ -239,6 +240,7 @@ class OpenMediaVaultAPI(object):
                         "options": options,
                     }
                 ),
+                verify=False,
             )
 
             data = response.json()
