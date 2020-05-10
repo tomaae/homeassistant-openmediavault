@@ -222,7 +222,6 @@ class OpenMediaVaultSensor(Entity):
         """Return a port description for device registry."""
         info = {
             "manufacturer": "OpenMediaVault",
-            # "model": self._ctrl.data["resource"]["board-name"],
             "name": f"{self._inst} {self._type[ATTR_GROUP]}",
         }
         if ATTR_GROUP in self._type:
@@ -267,9 +266,8 @@ class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
     def device_info(self):
         """Return a port description for device registry."""
         info = {
-            "identifiers": {(DOMAIN, self._inst, "sensor", "Filesystem",)},
+            "identifiers": {(DOMAIN, self._inst, "sensor", "Filesystem")},
             "manufacturer": "OpenMediaVault",
-            # "model": self._ctrl.data["resource"]["board-name"],
             "name": f"{self._inst} Filesystem",
         }
 
