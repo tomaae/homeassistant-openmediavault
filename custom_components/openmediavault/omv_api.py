@@ -43,6 +43,7 @@ class OpenMediaVaultAPI(object):
         self._username = username
         self._password = password
         self._protocol = "https" if self._use_ssl else "http"
+        self._ssl_verify = False if self._use_ssl else True
         self._resource = f"{self._protocol}://{self._host}/rpc.php"
 
         self.lock = Lock()
@@ -136,7 +137,7 @@ class OpenMediaVaultAPI(object):
                         },
                     }
                 ),
-                verify=False,
+                verify=self._ssl_verify,
             )
             data = response.json()
 
@@ -240,7 +241,7 @@ class OpenMediaVaultAPI(object):
                         "options": options,
                     }
                 ),
-                verify=False,
+                verify=self._ssl_verify,
             )
 
             data = response.json()
