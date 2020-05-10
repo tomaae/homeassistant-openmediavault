@@ -40,6 +40,7 @@ class OpenMediaVaultControllerData(object):
         self.data = {
             "hwinfo": {},
             "fs": {},
+            # "service": {},
         }
 
         self.listeners = []
@@ -106,6 +107,7 @@ class OpenMediaVaultControllerData(object):
 
         await self.hass.async_add_executor_job(self.get_hwinfo)
         await self.hass.async_add_executor_job(self.get_fs)
+        # await self.hass.async_add_executor_job(self.get_service)
 
         async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
@@ -172,3 +174,20 @@ class OpenMediaVaultControllerData(object):
             self.data["fs"][uid]["available"] = round(
                 int(self.data["fs"][uid]["available"]) / 1073741824, 1
             )
+
+    # ---------------------------
+    #   get_service
+    # ---------------------------
+    # def get_service(self):
+    #     """Get OMV services status"""
+    #     self.data["service"] = parse_api(
+    #         data=self.data["service"],
+    #         source=self.api.query("Services", "getStatus"),
+    #         key="name",
+    #         vals=[
+    #             {"name": "name"},
+    #             {"name": "title", "default": "unknown"},
+    #             {"name": "enabled", "type": "bool", "default": False},
+    #             {"name": "running", "type": "bool", "default": False},
+    #         ],
+    #     )
