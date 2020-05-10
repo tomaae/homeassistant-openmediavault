@@ -10,7 +10,8 @@
                     "host": "Host",
                     "username": "Username",
                     "password": "Password",
-                    "ssl": "Use SSL"
+                    "ssl": "Use SSL",
+                    "verify_ssl": "Verify SSL certificate"
                 }
             }
         },
@@ -18,7 +19,8 @@
             "name_exists": "Name already exists.",
             "cannot_connect": "Cannot connect to OpenMediaVault.",
             "connection_timeout": "OpenMediaVault connection timeout.",
-            "wrong_login": "Invalid user name or password."
+            "wrong_login": "Invalid user name or password.",
+            "ssl_verify_failed": "SSL certificate verify failed."
         }
     }
 }

@@ -33,9 +33,7 @@ def save_cookies(filename: str, data: dict):
 class OpenMediaVaultAPI(object):
     """Handle all communication with OMV."""
 
-    def __init__(
-        self, hass, host, username, password, use_ssl=False,
-    ):
+    def __init__(self, hass, host, username, password, use_ssl=False, verify_ssl=True):
         """Initialize OMV API."""
         self._hass = hass
         self._host = host
@@ -43,7 +41,9 @@ class OpenMediaVaultAPI(object):
         self._username = username
         self._password = password
         self._protocol = "https" if self._use_ssl else "http"
-        self._ssl_verify = False if self._use_ssl else True
+        self._ssl_verify = verify_ssl
+        if not self._use_ssl:
+            self._ssl_verify = True
         self._resource = f"{self._protocol}://{self._host}/rpc.php"
 
         self.lock = Lock()
@@ -197,8 +197,11 @@ class OpenMediaVaultAPI(object):
     def error_to_strings(self, error=""):
         """Translate error output to error string."""
         self.error = "cannot_connect"
-        if error == "Incorrect username or password":
+        if "Incorrect username or password" in error:
             self.error = "wrong_login"
+
+        if "certificate verify failed" in error:
+            self.error = "ssl_verify_failed"
 
     # ---------------------------
     #   connected

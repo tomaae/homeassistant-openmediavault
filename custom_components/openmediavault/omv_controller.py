@@ -19,7 +19,7 @@ from homeassistant.const import (
     CONF_SSL,
 )
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_SSL_VERIFY
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,6 +52,7 @@ class OpenMediaVaultControllerData(object):
             config_entry.data[CONF_USERNAME],
             config_entry.data[CONF_PASSWORD],
             config_entry.data[CONF_SSL],
+            config_entry.data[CONF_SSL_VERIFY],
         )
 
         self._force_update_callback = None
