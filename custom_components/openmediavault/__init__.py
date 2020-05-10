@@ -35,6 +35,12 @@ async def async_setup_entry(hass, config_entry):
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, "sensor")
     )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(config_entry, "binary_sensor")
+    )
+    # hass.async_create_task(
+    #     hass.config_entries.async_forward_entry_setup(config_entry, "switch")
+    # )
 
     device_registry = await hass.helpers.device_registry.async_get_registry()
     device_registry.async_get_or_create(
@@ -54,6 +60,8 @@ async def async_unload_entry(hass, config_entry):
     """Unload OMV config entry."""
     controller = hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id]
     await hass.config_entries.async_forward_entry_unload(config_entry, "sensor")
+    await hass.config_entries.async_forward_entry_unload(config_entry, "binary_sensor")
+    # await hass.config_entries.async_forward_entry_unload(config_entry, "switch")
     await controller.async_reset()
     hass.data[DOMAIN][DATA_CLIENT].pop(config_entry.entry_id)
     return True
