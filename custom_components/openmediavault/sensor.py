@@ -57,6 +57,8 @@ DEVICE_ATTRIBUTES_FS = [
     "available",
     "type",
     "mountpoint",
+    "_readonly",
+    "_used",
 ]
 
 

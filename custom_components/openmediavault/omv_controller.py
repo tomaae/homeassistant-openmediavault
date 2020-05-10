@@ -148,9 +148,7 @@ class OpenMediaVaultControllerData(object):
         """Get all filesystems from OMV"""
         self.data["fs"] = parse_api(
             data=self.data["fs"],
-            source=self.api.query(
-                "FileSystemMgmt", "enumerateMountedFilesystems", {"includeroot": True}
-            ),
+            source=self.api.query("FileSystemMgmt", "enumerateFilesystems"),
             key="uuid",
             vals=[
                 {"name": "uuid"},
@@ -161,7 +159,10 @@ class OpenMediaVaultControllerData(object):
                 {"name": "available", "default": "unknown"},
                 {"name": "size", "default": "unknown"},
                 {"name": "percentage", "default": "unknown"},
+                {"name": "_readonly", "type": "bool", "default": False},
+                {"name": "_used", "type": "bool", "default": False},
             ],
+            skip=[{"name": "type", "value": "swap"}],
         )
 
         for uid in self.data["fs"]:
