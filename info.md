@@ -1,5 +1,5 @@
 {% if installed %}
-{% if version_installed.replace("v", "").replace(".","") | int < 11  %}
+{% if version_installed.replace("v", "").replace(".","") | int < 110  %}
 **IMPORTANT: Integration needs to be re-added after update.**
 {% endif %}
 {% endif %}
