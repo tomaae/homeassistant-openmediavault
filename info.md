@@ -1,3 +1,9 @@
+{% if installed %}
+{% if version_installed.replace("v", "").replace(".","") | int < 11  %}
+**IMPORTANT: Integration needs to be re-added after update.**
+{% endif %}
+{% endif %}
+
 ![OpenMediaVault Logo](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/header.png)
 
 Monitor your OpenMediaVault 5 NAS from Home Assistant.
@@ -5,6 +11,8 @@ Monitor your OpenMediaVault 5 NAS from Home Assistant.
 Features:
 * Filesystem usage sensors
 * System sensors (CPU, Memory)
+* System status sensors (Available updates, Required reboot and Dirty config)
+* Disk and smart sensors
 
 ## Links
 - [Documentation](https://github.com/tomaae/homeassistant-openmediavault/tree/master)

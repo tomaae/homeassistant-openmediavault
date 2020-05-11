@@ -17,17 +17,24 @@ Monitor your OpenMediaVault 5 NAS from Home Assistant.
 Features:
 * Filesystem usage sensors
 * System sensors (CPU, Memory)
+* System status sensors (Available updates, Required reboot and Dirty config)
+* Disk and smart sensors
 
 # Features
 ## Filesystem usage
-Monitor you filesystem usage.
+Monitor your filesystem usage.
 
 ![Filesystem usage](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/filesystem_sensor.png)
 
 ## System
-Monitor you OpenMediaVault system.
+Monitor your OpenMediaVault system.
 
 ![System](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/system_sensors.png)
+
+## Disk smart
+Monitor your disks.
+
+![Disk info](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/disk_sensor.png)
 
 # Install integration
 This integration is distributed using [HACS](https://hacs.xyz/).
@@ -41,6 +48,8 @@ You can add this integration several times for different devices.
 ![Add Integration](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/setup_integration.png)
 * "Name of the integration" - Friendly name for this NAS
 * "Host" - Use hostname or IP
+* "Use SSL" - Connect to OMV using SSL
+* "Verify SSL certificate" - Validate SSL certificate (must be trusted certificate)
 
 # Development
 ## Translation
