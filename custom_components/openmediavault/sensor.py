@@ -9,6 +9,8 @@ from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN, DATA_CLIENT, ATTRIBUTION
 
+from re import search as re_search
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -61,6 +63,28 @@ DEVICE_ATTRIBUTES_FS = [
     "_used",
 ]
 
+DEVICE_ATTRIBUTES_DISK = [
+    "canonicaldevicefile",
+    "size",
+    "israid",
+    "isroot",
+    "devicemodel",
+    "serialnumber",
+    "firmwareversion",
+    "sectorsize",
+    "rotationrate",
+    "writecacheis",
+    "smartsupportis",
+    "Raw_Read_Error_Rate",
+    "Spin_Up_Time",
+    "Start_Stop_Count",
+    "Reallocated_Sector_Ct",
+    "Seek_Error_Rate",
+    "Load_Cycle_Count",
+    "UDMA_CRC_Error_Count",
+    "Multi_Zone_Error_Rate",
+]
+
 
 # ---------------------------
 #   async_setup_entry
@@ -107,17 +131,17 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
 
     for sid, sid_uid, sid_name, sid_ref, sid_attr, sid_func in zip(
         # Data point name
-        ["fs"],
+        ["fs", "disk"],
         # Data point unique id
-        ["uuid"],
+        ["uuid", "devicename"],
         # Entry Name
-        ["label"],
+        ["label", "devicename"],
         # Entry Unique id
-        ["uuid"],
+        ["uuid", "devicename"],
         # Attr
-        [DEVICE_ATTRIBUTES_FS],
+        [DEVICE_ATTRIBUTES_FS, DEVICE_ATTRIBUTES_DISK],
         # Tracker function
-        [OpenMediaVaultFSSensor],
+        [OpenMediaVaultFSSensor, OpenMediaVaultDiskSensor],
     ):
         for uid in omv_controller.data[sid]:
             # Update entity
@@ -136,7 +160,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
                 "sid_ref": sid_ref,
                 "sid_attr": sid_attr,
             }
-            sensors[item_id] = OpenMediaVaultFSSensor(
+            sensors[item_id] = sid_func(
                 omv_controller=omv_controller, inst=inst, uid=uid, sid_data=sid_data
             )
 
@@ -285,7 +309,7 @@ class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
     @property
     def icon(self):
         """Return the icon."""
-        return "mdi:harddisk"
+        return "mdi:file-tree"
 
     @property
     def state(self):
@@ -296,6 +320,79 @@ class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "%"
+
+    @property
+    def device_state_attributes(self):
+        """Return the port state attributes."""
+        attributes = self._attrs
+
+        for variable in self._sid_data["sid_attr"]:
+            if variable in self._data:
+                attributes[format_attribute(variable)] = self._data[variable]
+
+        return attributes
+
+
+# ---------------------------
+#   OpenMediaVaultDiskSensor
+# ---------------------------
+class OpenMediaVaultDiskSensor(OpenMediaVaultSensor):
+    """Define an OpenMediaVault Disk sensor."""
+
+    def __init__(self, omv_controller, inst, uid, sid_data):
+        """Initialize."""
+        super().__init__(omv_controller, inst)
+        self._sid_data = sid_data
+        self._uid = uid
+        self._data = omv_controller.data[self._sid_data["sid"]][uid]
+
+    @property
+    def name(self):
+        """Return the name."""
+        return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
+
+    @property
+    def unique_id(self):
+        """Return a unique_id for this entity."""
+        return f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
+
+    @property
+    def device_info(self):
+        """Return a port description for device registry."""
+        info = {
+            "identifiers": {(DOMAIN, self._inst, "sensor", "Disk")},
+            "manufacturer": "OpenMediaVault",
+            "name": f"{self._inst} Disk",
+        }
+
+        return info
+
+    async def async_added_to_hass(self):
+        """Entity created."""
+        _LOGGER.debug(
+            "New sensor %s (%s %s)",
+            self._inst,
+            self._sid_data["sid"],
+            self._data[self._sid_data["sid_uid"]],
+        )
+
+    @property
+    def icon(self):
+        """Return the icon."""
+        return "mdi:harddisk"
+
+    @property
+    def state(self):
+        """Return the state."""
+        if self._data["Temperature_Celsius"] == "unknown":
+            return self._data["Temperature_Celsius"]
+
+        return re_search("[0-9]+", self._data["Temperature_Celsius"]).group()
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        return "°C"
 
     @property
     def device_state_attributes(self):

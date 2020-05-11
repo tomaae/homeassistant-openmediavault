@@ -28,6 +28,7 @@ async def async_setup(hass, _config):
 async def async_setup_entry(hass, config_entry):
     """Set up OMV config entry."""
     controller = OpenMediaVaultControllerData(hass, config_entry)
+    await controller.async_hwinfo_update()
     await controller.async_update()
     await controller.async_init()
 
