@@ -53,7 +53,7 @@ def parse_api(
     skip=None,
 ) -> dict:
     """Get data from API"""
-    if not key and not key_search:
+    if type(source) == dict:
         tmp = source
         source = [tmp]
 
