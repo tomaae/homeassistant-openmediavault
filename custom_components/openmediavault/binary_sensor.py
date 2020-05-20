@@ -2,7 +2,7 @@
 
 import logging
 
-from homeassistant.components.binary_sensor import BinarySensorDevice
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import (
     CONF_NAME,
     ATTR_ATTRIBUTION,
@@ -90,7 +90,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
         async_add_entities(new_sensors, True)
 
 
-class MikrotikControllerBinarySensor(BinarySensorDevice):
+class MikrotikControllerBinarySensor(BinarySensorEntity):
     """Define an Mikrotik Controller Binary Sensor."""
 
     def __init__(self, omv_controller, inst, sensor):
