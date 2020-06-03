@@ -10,7 +10,7 @@ Monitor your OpenMediaVault 5 NAS from Home Assistant.
 
 Features:
 * Filesystem usage sensors
-* System sensors (CPU, Memory)
+* System sensors (CPU, Memory, Uptime)
 * System status sensors (Available updates, Required reboot and Dirty config)
 * Disk and smart sensors
 
