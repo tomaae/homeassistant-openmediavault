@@ -52,6 +52,14 @@ SENSOR_TYPES = {
         ATTR_PATH: "hwinfo",
         ATTR_ATTR: "memUsage",
     },
+    "system_uptimeEpoch": {
+        ATTR_ICON: "mdi:clock-outline",
+        ATTR_LABEL: "Uptime",
+        ATTR_UNIT: "hours",
+        ATTR_GROUP: "System",
+        ATTR_PATH: "hwinfo",
+        ATTR_ATTR: "uptimeEpoch",
+    },
 }
 
 DEVICE_ATTRIBUTES_FS = [

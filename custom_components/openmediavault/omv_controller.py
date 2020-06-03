@@ -162,6 +162,7 @@ class OpenMediaVaultControllerData(object):
                 {"name": "cpuUsage", "default": 0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
+                {"name": "uptime", "default": "0 days 0 hours 0 minutes 0 seconds"},
                 {"name": "configDirty", "type": "bool", "default": False},
                 {"name": "rebootRequired", "type": "bool", "default": False},
                 {"name": "pkgUpdatesAvailable", "type": "bool", "default": False},
@@ -169,6 +170,8 @@ class OpenMediaVaultControllerData(object):
             ensure_vals=[{"name": "memUsage", "default": 0}],
         )
 
+        tmp = self.data["hwinfo"]["uptime"].split(" ")
+        self.data["hwinfo"]["uptimeEpoch"] = int(tmp[0]) * 86400 + int(tmp[2]) * 3600
         self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
         if int(self.data["hwinfo"]["memTotal"]) > 0:
             mem = (
