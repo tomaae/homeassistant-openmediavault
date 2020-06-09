@@ -249,12 +249,6 @@ class OpenMediaVaultAPI(object):
 
             data = response.json()
             _LOGGER.debug("OpenMediaVault %s query response: %s", self._host, data)
-            if data is not None and data["error"] is not None:
-                error_code = data["error"]["code"]
-                if error_code == 5001 or error_code == 5002:
-                    _LOGGER.debug("OpenMediaVault %s session expired", self._host)
-                    if self.connect():
-                        self.query(service, method, params, options)
 
         except (
             requests.exceptions.ConnectionError,
@@ -266,4 +260,17 @@ class OpenMediaVaultAPI(object):
             return None
 
         self.lock.release()
+        if data is not None and data["error"] is not None:
+            error_message = data["error"]["message"]
+            error_code = data["error"]["code"]
+            if (
+                error_code == 5001
+                or error_code == 5002
+                or error_message == "Session not authenticated."
+                or error_message == "Session expired."
+            ):
+                _LOGGER.debug("OpenMediaVault %s session expired", self._host)
+                if self.connect():
+                    return self.query(service, method, params, options)
+
         return data["response"]
