@@ -170,6 +170,10 @@ class OpenMediaVaultAPI(object):
             self._connection = None
             self.lock.release()
             return False
+        except:
+            self.disconnect("connect")
+            self.lock.release()
+            return None
 
         else:
             if self.connection_error_reported:
