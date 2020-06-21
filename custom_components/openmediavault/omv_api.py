@@ -259,7 +259,7 @@ class OpenMediaVaultAPI(object):
             self.lock.release()
             return None
         except:
-            self.disconnect("path")
+            self.disconnect("query")
             self.lock.release()
             return None
 
