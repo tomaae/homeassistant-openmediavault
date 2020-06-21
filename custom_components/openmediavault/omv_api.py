@@ -258,6 +258,10 @@ class OpenMediaVaultAPI(object):
             self.disconnect("query", api_error)
             self.lock.release()
             return None
+        except:
+            self.disconnect("path")
+            self.lock.release()
+            return None
 
         self.lock.release()
         if data is not None and data["error"] is not None:
