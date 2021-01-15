@@ -76,8 +76,12 @@ def parse_api(
         if key or key_search:
             uid = get_uid(entry, key, key_secondary, key_search, keymap)
             if not uid:
-                continue
-
+                # ZFS filesystems don't have a UUID, so use devicefile instead.
+                if entry["type"] == "zfs":
+                    uid = entry["devicefile"]
+                    entry["uuid"] = uid
+                else:
+                    continue
             if uid not in data:
                 data[uid] = {}
 
