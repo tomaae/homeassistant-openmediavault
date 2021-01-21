@@ -28,14 +28,11 @@ def save_cookies(filename: str, data: dict):
         pickle_dump(data, f)
 
 
-# ---------------------------
-#   OpenMediaVaultAPI
-# ---------------------------
 class OpenMediaVaultAPI(object):
     """Handle all communication with OMV."""
 
     def __init__(self, hass, host, username, password, use_ssl=False, verify_ssl=True):
-        """Initialize OMV API."""
+        """Initialize the OMV API."""
         self._hass = hass
         self._host = host
         self._use_ssl = use_ssl
@@ -60,22 +57,16 @@ class OpenMediaVaultAPI(object):
         self.connection_error_reported = False
         self.accounting_last_run = None
 
-    # ---------------------------
-    #   has_reconnected
-    # ---------------------------
     def has_reconnected(self) -> bool:
-        """Check if API has reconnected"""
+        """Check if API has reconnected."""
         if self._reconnected:
             self._reconnected = False
             return True
 
         return False
 
-    # ---------------------------
-    #   connection_check
-    # ---------------------------
     def connection_check(self) -> bool:
-        """Check if API is connected"""
+        """Check if API is connected."""
         if not self._connected or not self._connection:
             if self._connection_epoch > time() - self._connection_retry_sec:
                 return False
@@ -85,11 +76,8 @@ class OpenMediaVaultAPI(object):
 
         return True
 
-    # ---------------------------
-    #   disconnect
-    # ---------------------------
     def disconnect(self, location="unknown", error=None):
-        """Disconnect API"""
+        """Disconnect API."""
         if not error:
             error = "unknown"
 
@@ -108,9 +96,6 @@ class OpenMediaVaultAPI(object):
         self._connection = None
         self._connection_epoch = 0
 
-    # ---------------------------
-    #   connect
-    # ---------------------------
     def connect(self) -> bool:
         """Connect API."""
         self.error = ""
@@ -196,9 +181,6 @@ class OpenMediaVaultAPI(object):
 
         return self._connected
 
-    # ---------------------------
-    #   error_to_strings
-    # ---------------------------
     def error_to_strings(self, error=""):
         """Translate error output to error string."""
         self.error = "cannot_connect"
@@ -208,16 +190,10 @@ class OpenMediaVaultAPI(object):
         if "certificate verify failed" in error:
             self.error = "ssl_verify_failed"
 
-    # ---------------------------
-    #   connected
-    # ---------------------------
     def connected(self) -> bool:
         """Return connected boolean."""
         return self._connected
 
-    # ---------------------------
-    #   query
-    # ---------------------------
     def query(self, service, method, params=None, options=None) -> Optional(list):
         """Retrieve data from OMV"""
         if not self.connection_check():

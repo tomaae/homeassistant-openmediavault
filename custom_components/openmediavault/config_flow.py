@@ -24,9 +24,6 @@ from .const import (
 from .omv_api import OpenMediaVaultAPI
 
 
-# ---------------------------
-#   configured_instances
-# ---------------------------
 @callback
 def configured_instances(hass):
     """Return a set of configured instances."""
@@ -35,20 +32,17 @@ def configured_instances(hass):
     )
 
 
-# ---------------------------
-#   OpenMediaVaultConfigFlow
-# ---------------------------
-class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
-    """OpenMediaVaultConfigFlow class"""
+class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
+    """OMVConfigFlow class."""
 
     VERSION = 1
     CONNECTION_CLASS = CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
-        """Initialize OpenMediaVaultConfigFlow."""
+        """Initialize OMVConfigFlow."""
 
     async def async_step_import(self, user_input=None):
-        """Occurs when a previously entry setup fails and is re-initiated."""
+        """Occurs when a previous entry setup fails and is re-initiated."""
         return await self.async_step_user(user_input)
 
     async def async_step_user(self, user_input=None):
@@ -91,11 +85,8 @@ class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    # ---------------------------
-    #   _show_config_form
-    # ---------------------------
     def _show_config_form(self, user_input, errors=None):
-        """Show the configuration form to edit data."""
+        """Show the configuration form."""
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(

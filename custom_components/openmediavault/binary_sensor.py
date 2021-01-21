@@ -1,4 +1,4 @@
-"""Support for the OpenMediaVault binary sensor service."""
+"""Support for the OpenMediaVault binary sensor platform."""
 
 import logging
 
@@ -20,9 +20,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-# ---------------------------
-#   async_setup_entry
-# ---------------------------
+
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up device tracker for OpenMediaVault component."""
     inst = config_entry.data[CONF_NAME]
@@ -39,10 +37,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
     update_controller()
 
-
-# ---------------------------
-#   update_items
-# ---------------------------
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
     """Update sensor state from controller."""

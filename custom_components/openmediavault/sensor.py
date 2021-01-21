@@ -27,9 +27,6 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-# ---------------------------
-#   format_attribute
-# ---------------------------
 def format_attribute(attr):
     """Format state attributes"""
     res = attr.replace("-", " ")
@@ -39,10 +36,6 @@ def format_attribute(attr):
     res = res.replace(" mtu", " MTU")
     return res
 
-
-# ---------------------------
-#   async_setup_entry
-# ---------------------------
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up device tracker for OpenMediaVault component."""
     inst = config_entry.data[CONF_NAME]
@@ -60,10 +53,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     update_controller()
 
-
-# ---------------------------
-#   update_items
-# ---------------------------
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
     """Update sensor state from the controller."""
@@ -95,7 +84,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
         # Attr
         [DEVICE_ATTRIBUTES_FS, DEVICE_ATTRIBUTES_DISK],
         # Tracker function
-        [OpenMediaVaultFSSensor, OpenMediaVaultDiskSensor],
+        [OMVFileSystemSensor, OMVDiskSensor],
     ):
         for uid in omv_controller.data[sid]:
             # Update entity
@@ -124,9 +113,6 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
         async_add_entities(new_sensors, True)
 
 
-# ---------------------------
-#   OpenMediaVaultSensor
-# ---------------------------
 class OMVSensor(Entity):
     """Define an OpenMediaVault sensor."""
 
@@ -222,10 +208,7 @@ class OMVSensor(Entity):
         _LOGGER.debug("New sensor %s (%s)", self._inst, self._sensor)
 
 
-# ---------------------------
-#   OpenMediaVaultFSSensor
-# ---------------------------
-class OpenMediaVaultFSSensor(OMVSensor):
+class OMVFileSystemSensor(OMVSensor):
     """Define an OpenMediaVault FS sensor."""
 
     def __init__(self, omv_controller, inst, uid, sid_data):
@@ -292,10 +275,7 @@ class OpenMediaVaultFSSensor(OMVSensor):
         return attributes
 
 
-# ---------------------------
-#   OpenMediaVaultDiskSensor
-# ---------------------------
-class OpenMediaVaultDiskSensor(OMVSensor):
+class OMVDiskSensor(OMVSensor):
     """Define an OpenMediaVault Disk sensor."""
 
     def __init__(self, omv_controller, inst, uid, sid_data):
