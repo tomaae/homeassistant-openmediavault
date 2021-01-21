@@ -3,18 +3,11 @@
 import logging
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.const import (
-    CONF_NAME,
-    ATTR_ATTRIBUTION,
-)
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
-from .const import (
-    DOMAIN,
-    DATA_CLIENT,
-    ATTRIBUTION,
-)
+from .const import ATTRIBUTION, DATA_CLIENT, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

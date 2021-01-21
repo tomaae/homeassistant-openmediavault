@@ -1,34 +1,27 @@
 """Config flow to configure OpenMediaVault."""
 
-import logging
-
 import voluptuous as vol
-from homeassistant.config_entries import (
-    CONN_CLASS_LOCAL_POLL,
-    ConfigFlow,
-)
+from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
 from homeassistant.const import (
-    CONF_NAME,
     CONF_HOST,
-    CONF_USERNAME,
+    CONF_NAME,
     CONF_PASSWORD,
     CONF_SSL,
+    CONF_USERNAME,
 )
 from homeassistant.core import callback
 
 from .const import (
-    DOMAIN,
-    DEFAULT_HOST,
-    DEFAULT_USERNAME,
-    DEFAULT_PASSWORD,
-    DEFAULT_DEVICE_NAME,
-    DEFAULT_SSL,
     CONF_SSL_VERIFY,
+    DEFAULT_DEVICE_NAME,
+    DEFAULT_HOST,
+    DEFAULT_PASSWORD,
+    DEFAULT_SSL,
     DEFAULT_SSL_VERIFY,
+    DEFAULT_USERNAME,
+    DOMAIN,
 )
 from .omv_api import OpenMediaVaultAPI
-
-_LOGGER = logging.getLogger(__name__)
 
 
 # ---------------------------

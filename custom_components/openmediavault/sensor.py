@@ -1,15 +1,14 @@
 """Support for the OpenMediaVault sensor service."""
 
 import logging
+from re import search as re_search
 
-from homeassistant.const import CONF_NAME, ATTR_ATTRIBUTION
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, DATA_CLIENT, ATTRIBUTION
-
-from re import search as re_search
+from .const import ATTRIBUTION, DATA_CLIENT, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -258,7 +257,12 @@ class OpenMediaVaultSensor(Entity):
         }
         if ATTR_GROUP in self._type:
             info["identifiers"] = {
-                (DOMAIN, self._inst, "sensor", self._type[ATTR_GROUP],)
+                (
+                    DOMAIN,
+                    self._inst,
+                    "sensor",
+                    self._type[ATTR_GROUP],
+                )
             }
 
         return info

@@ -1,27 +1,22 @@
 """OpenMediaVault Controller"""
 
 import asyncio
-import logging
 from datetime import timedelta
 
-from .omv_api import OpenMediaVaultAPI
-from .helper import parse_api
-
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_SSL,
+    CONF_USERNAME,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 
-from homeassistant.const import (
-    CONF_NAME,
-    CONF_HOST,
-    CONF_USERNAME,
-    CONF_PASSWORD,
-    CONF_SSL,
-)
-
-from .const import DOMAIN, CONF_SSL_VERIFY
-
-_LOGGER = logging.getLogger(__name__)
+from .const import CONF_SSL_VERIFY, DOMAIN
+from .helper import parse_api
+from .omv_api import OpenMediaVaultAPI
 
 
 # ---------------------------

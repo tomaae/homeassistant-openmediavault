@@ -1,15 +1,7 @@
-"""OpenMediaVault integration"""
+"""The OpenMediaVault integration"""
 
-import logging
-
-from .const import (
-    DOMAIN,
-    DATA_CLIENT,
-)
-
+from .const import DATA_CLIENT, DOMAIN
 from .omv_controller import OpenMediaVaultControllerData
-
-_LOGGER = logging.getLogger(__name__)
 
 
 # ---------------------------

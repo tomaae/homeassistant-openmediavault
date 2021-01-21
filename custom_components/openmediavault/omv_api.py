@@ -1,13 +1,14 @@
 """OpenMediaVault API"""
 
-import logging
-from time import time
-from threading import Lock
 import json
-import requests
-from pickle import dump as pickle_dump, load as pickle_load
+import logging
 from os import path
+from pickle import dump as pickle_dump
+from pickle import load as pickle_load
+from threading import Lock
+from time import time
 
+import requests
 from voluptuous import Optional
 
 _LOGGER = logging.getLogger(__name__)
