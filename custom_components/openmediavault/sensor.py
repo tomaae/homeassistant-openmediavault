@@ -8,7 +8,21 @@ from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 
-from .const import ATTRIBUTION, DATA_CLIENT, DOMAIN
+from .const import (
+    ATTRIBUTION,
+    DATA_CLIENT,
+    DOMAIN,
+    ATTR_ICON,
+    ATTR_LABEL,
+    ATTR_UNIT,
+    ATTR_UNIT_ATTR,
+    ATTR_GROUP,
+    ATTR_PATH,
+    ATTR_ATTR,
+    SENSOR_TYPES,
+    DEVICE_ATTRIBUTES_FS,
+    DEVICE_ATTRIBUTES_DISK,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,73 +38,6 @@ def format_attribute(attr):
     res = res.replace(" mac ", " MAC ")
     res = res.replace(" mtu", " MTU")
     return res
-
-
-ATTR_ICON = "icon"
-ATTR_LABEL = "label"
-ATTR_UNIT = "unit"
-ATTR_UNIT_ATTR = "unit_attr"
-ATTR_GROUP = "group"
-ATTR_PATH = "data_path"
-ATTR_ATTR = "data_attr"
-
-SENSOR_TYPES = {
-    "system_cpuUsage": {
-        ATTR_ICON: "mdi:speedometer",
-        ATTR_LABEL: "CPU load",
-        ATTR_UNIT: "%",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "cpuUsage",
-    },
-    "system_memUsage": {
-        ATTR_ICON: "mdi:memory",
-        ATTR_LABEL: "Memory",
-        ATTR_UNIT: "%",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "memUsage",
-    },
-    "system_uptimeEpoch": {
-        ATTR_ICON: "mdi:clock-outline",
-        ATTR_LABEL: "Uptime",
-        ATTR_UNIT: "hours",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "uptimeEpoch",
-    },
-}
-
-DEVICE_ATTRIBUTES_FS = [
-    "size",
-    "available",
-    "type",
-    "mountpoint",
-    "_readonly",
-    "_used",
-]
-
-DEVICE_ATTRIBUTES_DISK = [
-    "canonicaldevicefile",
-    "size",
-    "israid",
-    "isroot",
-    "devicemodel",
-    "serialnumber",
-    "firmwareversion",
-    "sectorsize",
-    "rotationrate",
-    "writecacheis",
-    "smartsupportis",
-    "Raw_Read_Error_Rate",
-    "Spin_Up_Time",
-    "Start_Stop_Count",
-    "Reallocated_Sector_Ct",
-    "Seek_Error_Rate",
-    "Load_Cycle_Count",
-    "UDMA_CRC_Error_Count",
-    "Multi_Zone_Error_Rate",
-]
 
 
 # ---------------------------
@@ -131,7 +78,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
                 sensors[item_id].async_schedule_update_ha_state()
             continue
 
-        sensors[item_id] = OpenMediaVaultSensor(
+        sensors[item_id] = OMVSensor(
             omv_controller=omv_controller, inst=inst, sensor=sensor
         )
         new_sensors.append(sensors[item_id])
@@ -180,7 +127,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
 # ---------------------------
 #   OpenMediaVaultSensor
 # ---------------------------
-class OpenMediaVaultSensor(Entity):
+class OMVSensor(Entity):
     """Define an OpenMediaVault sensor."""
 
     def __init__(self, omv_controller, inst, sensor=None):
@@ -278,7 +225,7 @@ class OpenMediaVaultSensor(Entity):
 # ---------------------------
 #   OpenMediaVaultFSSensor
 # ---------------------------
-class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
+class OpenMediaVaultFSSensor(OMVSensor):
     """Define an OpenMediaVault FS sensor."""
 
     def __init__(self, omv_controller, inst, uid, sid_data):
@@ -348,7 +295,7 @@ class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
 # ---------------------------
 #   OpenMediaVaultDiskSensor
 # ---------------------------
-class OpenMediaVaultDiskSensor(OpenMediaVaultSensor):
+class OpenMediaVaultDiskSensor(OMVSensor):
     """Define an OpenMediaVault Disk sensor."""
 
     def __init__(self, omv_controller, inst, uid, sid_data):
