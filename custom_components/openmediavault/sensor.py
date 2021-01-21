@@ -1,4 +1,4 @@
-"""Support for the OpenMediaVault sensor service."""
+"""Support for the OpenMediaVault sensor platform."""
 
 import logging
 from re import search as re_search
@@ -220,7 +220,7 @@ class OMVFileSystemSensor(OMVSensor):
 
     @property
     def name(self):
-        """Return the name."""
+        """Return the name of the sensor."""
         return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
 
     @property
@@ -287,7 +287,7 @@ class OMVDiskSensor(OMVSensor):
 
     @property
     def name(self):
-        """Return the name."""
+        """Return the name of the sensor."""
         return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
 
     @property

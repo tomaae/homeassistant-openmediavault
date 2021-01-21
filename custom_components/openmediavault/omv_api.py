@@ -195,7 +195,7 @@ class OpenMediaVaultAPI(object):
         return self._connected
 
     def query(self, service, method, params=None, options=None) -> Optional(list):
-        """Retrieve data from OMV"""
+        """Retrieve data from OMV."""
         if not self.connection_check():
             return None
 
