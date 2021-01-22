@@ -10,6 +10,7 @@ async def async_setup(hass, _config):
     hass.data[DOMAIN][DATA_CLIENT] = {}
     return True
 
+
 async def async_setup_entry(hass, config_entry):
     """Set up OMV config entry."""
     controller = OMVControllerData(hass, config_entry)
@@ -37,6 +38,7 @@ async def async_setup_entry(hass, config_entry):
     )
 
     return True
+
 
 async def async_unload_entry(hass, config_entry):
     """Unload OMV config entry."""

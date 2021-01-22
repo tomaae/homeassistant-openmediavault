@@ -37,6 +37,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
     update_controller()
 
+
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
     """Update sensor state from controller."""

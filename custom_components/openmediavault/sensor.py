@@ -36,6 +36,7 @@ def format_attribute(attr):
     res = res.replace(" mtu", " MTU")
     return res
 
+
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up device tracker for OpenMediaVault component."""
     inst = config_entry.data[CONF_NAME]
@@ -52,6 +53,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
 
     update_controller()
+
 
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
