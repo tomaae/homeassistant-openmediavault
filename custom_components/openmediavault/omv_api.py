@@ -23,6 +23,7 @@ def load_cookies(filename: str) -> Optional(dict):
             return pickle_load(f)
     return None
 
+
 # ---------------------------
 #   save_cookies
 # ---------------------------
@@ -30,6 +31,7 @@ def save_cookies(filename: str, data: dict):
     """Save cookies to file."""
     with open(filename, "wb") as f:
         pickle_dump(data, f)
+
 
 # ---------------------------
 #   OpenMediaVaultAPI
@@ -64,7 +66,7 @@ class OpenMediaVaultAPI(object):
         self.accounting_last_run = None
 
     # ---------------------------
-    #   has_connected
+    #   has_reconnected
     # ---------------------------
     def has_reconnected(self) -> bool:
         """Check if API has reconnected."""

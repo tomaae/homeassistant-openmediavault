@@ -99,7 +99,7 @@ class OMVControllerData(object):
         await self.async_hwinfo_update()
 
     # ---------------------------
-    #   async_hwinfo
+    #   async_hwinfo_update
     # ---------------------------
     async def async_hwinfo_update(self):
         """Update OpenMediaVault hardware info."""
@@ -316,7 +316,7 @@ class OMVControllerData(object):
             )
 
     # ---------------------------
-    #   get_services
+    #   get_service
     # ---------------------------
     # def get_service(self):
     #     """Get OMV services status"""

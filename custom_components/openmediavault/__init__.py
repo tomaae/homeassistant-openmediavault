@@ -12,6 +12,7 @@ async def async_setup(hass, _config):
     hass.data[DOMAIN][DATA_CLIENT] = {}
     return True
 
+
 # ---------------------------
 #   async_setup_entry
 # ---------------------------
@@ -42,6 +43,7 @@ async def async_setup_entry(hass, config_entry):
     )
 
     return True
+
 
 # ---------------------------
 #   async_unload_entry

@@ -39,6 +39,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
     update_controller()
 
+
 # ---------------------------
 #   update_items
 # ---------------------------
@@ -62,6 +63,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
 
     if new_sensors:
         async_add_entities(new_sensors, True)
+
 
 # ---------------------------
 #   OMVBinarySensor

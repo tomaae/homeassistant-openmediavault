@@ -39,6 +39,7 @@ def format_attribute(attr):
     res = res.replace(" mtu", " MTU")
     return res
 
+
 # ---------------------------
 #   async_setup_entry
 # ---------------------------
@@ -61,6 +62,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
 
     update_controller()
+
 
 # ---------------------------
 #   update_items
@@ -123,6 +125,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
 
     if new_sensors:
         async_add_entities(new_sensors, True)
+
 
 # ---------------------------
 #   OMVSensor
@@ -214,6 +217,7 @@ class OMVSensor(Entity):
         """Entity created."""
         _LOGGER.debug("New sensor %s (%s)", self._inst, self._sensor)
 
+
 # ---------------------------
 #   OMVFileSystemSensor
 # ---------------------------
@@ -282,6 +286,7 @@ class OMVFileSystemSensor(OMVSensor):
                 attributes[format_attribute(variable)] = self._data[variable]
 
         return attributes
+
 
 # ---------------------------
 #   OMVDiskSensor
