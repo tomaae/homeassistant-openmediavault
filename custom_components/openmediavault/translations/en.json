@@ -1,0 +1,26 @@
+{
+    "config": {
+        "title": "OpenMediaVault",
+        "step": {
+            "user": {
+                "title": "OpenMediaVault",
+                "description": "Set up OpenMediaVault integration.",
+                "data": {
+                    "name": "Name of the integration",
+                    "host": "Host",
+                    "username": "Username",
+                    "password": "Password",
+                    "ssl": "Use SSL",
+                    "verify_ssl": "Verify SSL certificate"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Name already exists.",
+            "cannot_connect": "Cannot connect to OpenMediaVault.",
+            "connection_timeout": "OpenMediaVault connection timeout.",
+            "wrong_login": "Invalid user name or password.",
+            "ssl_verify_failed": "SSL certificate verify failed."
+        }
+    }
+}
