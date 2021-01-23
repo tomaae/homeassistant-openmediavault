@@ -1,4 +1,4 @@
-"""OpenMediaVault Controller"""
+"""OpenMediaVault Controller."""
 
 import asyncio
 from datetime import timedelta
@@ -18,9 +18,11 @@ from .const import CONF_SSL_VERIFY, DOMAIN
 from .helper import parse_api
 from .omv_api import OpenMediaVaultAPI
 
-
+# ---------------------------
+#   OMVControllerData
+# ---------------------------
 class OMVControllerData(object):
-    """OMVController Class"""
+    """OMVControllerData Class."""
 
     def __init__(self, hass, config_entry):
         """Initialize OMVController."""
@@ -51,6 +53,9 @@ class OMVControllerData(object):
         self._force_update_callback = None
         self._force_hwinfo_update_callback = None
 
+    # ---------------------------
+    #   async_init
+    # ---------------------------
     async def async_init(self):
         self._force_update_callback = async_track_time_interval(
             self.hass, self.force_update, timedelta(seconds=60)
@@ -59,28 +64,43 @@ class OMVControllerData(object):
             self.hass, self.force_hwinfo_update, timedelta(seconds=3600)
         )
 
+    # ---------------------------
+    #   signal_update
+    # ---------------------------
     @property
     def signal_update(self):
         """Event to signal new data."""
         return f"{DOMAIN}-update-{self.name}"
 
+    # ---------------------------
+    #   async_reset
+    # ---------------------------
     async def async_reset(self):
-        """Reset dispatchers"""
+        """Reset dispatchers."""
         for unsub_dispatcher in self.listeners:
             unsub_dispatcher()
 
         self.listeners = []
         return True
 
+    # ---------------------------
+    #   connected
+    # ---------------------------
     def connected(self):
         """Return connected state."""
         return self.api.connected()
 
+    # ---------------------------
+    #   force_hwinfo_update
+    # ---------------------------
     @callback
     async def force_hwinfo_update(self, _now=None):
         """Trigger update by timer."""
         await self.async_hwinfo_update()
 
+    # ---------------------------
+    #   async_hwinfo
+    # ---------------------------
     async def async_hwinfo_update(self):
         """Update OpenMediaVault hardware info."""
         try:
@@ -94,11 +114,17 @@ class OMVControllerData(object):
 
         self.lock.release()
 
+    # ---------------------------
+    #   force_update
+    # ---------------------------
     @callback
     async def force_update(self, _now=None):
         """Trigger update by timer."""
         await self.async_update()
 
+    # ---------------------------
+    #   async_update
+    # ---------------------------
     async def async_update(self):
         """Update OMV data."""
         if self.api.has_reconnected():
@@ -119,6 +145,9 @@ class OMVControllerData(object):
         async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
 
+    # ---------------------------
+    #   get_hwinfo
+    # ---------------------------
     def get_hwinfo(self):
         """Get hardware info from OMV."""
         self.data["hwinfo"] = parse_api(
@@ -150,6 +179,9 @@ class OMVControllerData(object):
             mem = 0
         self.data["hwinfo"]["memUsage"] = round(mem, 1)
 
+    # ---------------------------
+    #   get_disk
+    # ---------------------------
     def get_disk(self):
         """Get all filesystems from OMV."""
         self.data["disk"] = parse_api(
@@ -213,6 +245,9 @@ class OMVControllerData(object):
             self.data["disk"][uid]["writecacheis"] = tmp_data["writecacheis"]
             self.data["disk"][uid]["smartsupportis"] = tmp_data["smartsupportis"]
 
+    # ---------------------------
+    #   get_smart
+    # ---------------------------
     def get_smart(self):
         for uid in self.data["disk"]:
             tmp_data = parse_api(
@@ -248,6 +283,9 @@ class OMVControllerData(object):
                 if tmp_val in tmp_data:
                     self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
 
+    # ---------------------------
+    #   get_fs
+    # ---------------------------
     def get_fs(self):
         """Get all filesystems from OMV."""
         self.data["fs"] = parse_api(
@@ -277,6 +315,9 @@ class OMVControllerData(object):
                 int(self.data["fs"][uid]["available"]) / 1073741824, 1
             )
 
+    # ---------------------------
+    #   get_services
+    # ---------------------------
     # def get_service(self):
     #     """Get OMV services status"""
     #     self.data["service"] = parse_api(

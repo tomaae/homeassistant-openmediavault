@@ -23,7 +23,9 @@ from .const import (
 )
 from .omv_api import OpenMediaVaultAPI
 
-
+# ---------------------------
+#   configured_instances
+# ---------------------------
 @callback
 def configured_instances(hass):
     """Return a set of configured instances."""
@@ -31,7 +33,9 @@ def configured_instances(hass):
         entry.data[CONF_NAME] for entry in hass.config_entries.async_entries(DOMAIN)
     )
 
-
+# ---------------------------
+#   OMVConfigFlow
+# ---------------------------
 class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
     """OMVConfigFlow class."""
 

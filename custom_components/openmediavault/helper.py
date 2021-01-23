@@ -6,7 +6,9 @@ from voluptuous import Optional
 
 _LOGGER = logging.getLogger(__name__)
 
-
+# ---------------------------
+#   from_entry
+# ---------------------------
 def from_entry(entry, param, default="") -> str:
     """Validate and return str value from OMV API dict"""
     if param not in entry:
@@ -14,7 +16,9 @@ def from_entry(entry, param, default="") -> str:
 
     return entry[param]
 
-
+# ---------------------------
+#   from_entry_bool
+# ---------------------------
 def from_entry_bool(entry, param, default=False, reverse=False) -> bool:
     """Validate and return a bool value from a OMV API dict"""
     if param not in entry:
@@ -30,7 +34,9 @@ def from_entry_bool(entry, param, default=False, reverse=False) -> bool:
 
     return ret
 
-
+# ---------------------------
+#   parse_api
+# ---------------------------
 def parse_api(
     data=None,
     source=None,
@@ -88,7 +94,9 @@ def parse_api(
 
     return data
 
-
+# ---------------------------
+#   get_uid
+# ---------------------------
 def get_uid(entry, key, key_secondary, key_search, keymap) -> Optional(str):
     """Get UID for data list"""
     uid = None
@@ -118,7 +126,9 @@ def get_uid(entry, key, key_secondary, key_search, keymap) -> Optional(str):
 
     return uid if uid else None
 
-
+# ---------------------------
+#   generate_keymap
+# ---------------------------
 def generate_keymap(data, key_search) -> Optional(dict):
     """Generate keymap."""
     if not key_search:
@@ -133,7 +143,9 @@ def generate_keymap(data, key_search) -> Optional(dict):
 
     return keymap
 
-
+# ---------------------------
+#   matches_only
+# ---------------------------
 def matches_only(entry, only) -> bool:
     """Return True if all variables are matched."""
     ret = False
@@ -146,7 +158,9 @@ def matches_only(entry, only) -> bool:
 
     return ret
 
-
+# ---------------------------
+#   can_skip
+# ---------------------------
 def can_skip(entry, skip) -> bool:
     """Return True if at least one variable matches."""
     ret = False
@@ -157,7 +171,9 @@ def can_skip(entry, skip) -> bool:
 
     return ret
 
-
+# ---------------------------
+#   fill_defaults
+# ---------------------------
 def fill_defaults(data, vals) -> dict:
     """Fill defaults if source is not present."""
     for val in vals:
@@ -183,7 +199,9 @@ def fill_defaults(data, vals) -> dict:
 
     return data
 
-
+# ---------------------------
+#   fill_vals
+# ---------------------------
 def fill_vals(data, entry, uid, vals) -> dict:
     """Fill all data"""
     for val in vals:
@@ -216,7 +234,9 @@ def fill_vals(data, entry, uid, vals) -> dict:
 
     return data
 
-
+# ---------------------------
+#   fill_ensure_vals
+# ---------------------------
 def fill_ensure_vals(data, uid, ensure_vals) -> dict:
     """Add required keys which are not available in data."""
     for val in ensure_vals:
@@ -231,7 +251,9 @@ def fill_ensure_vals(data, uid, ensure_vals) -> dict:
 
     return data
 
-
+# ---------------------------
+#   fill_vals_proc
+# ---------------------------
 def fill_vals_proc(data, uid, vals_proc) -> dict:
     """Add custom keys."""
     _data = data[uid] if uid else data

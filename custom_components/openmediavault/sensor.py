@@ -27,6 +27,9 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+# ---------------------------
+#   format_attribute
+# ---------------------------
 def format_attribute(attr):
     """Format state attributes"""
     res = attr.replace("-", " ")
@@ -36,13 +39,18 @@ def format_attribute(attr):
     res = res.replace(" mtu", " MTU")
     return res
 
-
+# ---------------------------
+#   async_setup_entry
+# ---------------------------
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up device tracker for OpenMediaVault component."""
     inst = config_entry.data[CONF_NAME]
     omv_controller = hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id]
     sensors = {}
 
+    # ---------------------------
+    #   update_contoller
+    # ---------------------------
     @callback
     def update_controller():
         """Update the values of the controller."""
@@ -54,7 +62,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     update_controller()
 
-
+# ---------------------------
+#   update_items
+# ---------------------------
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
     """Update sensor state from the controller."""
@@ -114,7 +124,9 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
     if new_sensors:
         async_add_entities(new_sensors, True)
 
-
+# ---------------------------
+#   OMVSensor
+# ---------------------------
 class OMVSensor(Entity):
     """Define an OpenMediaVault sensor."""
 
@@ -127,10 +139,9 @@ class OMVSensor(Entity):
             self._data = omv_controller.data[SENSOR_TYPES[sensor][ATTR_PATH]]
             self._type = SENSOR_TYPES[sensor]
             self._attr = SENSOR_TYPES[sensor][ATTR_ATTR]
+            self._icon = self._type[ATTR_ICON]
 
-        self._device_class = None
         self._state = None
-        self._icon = None
         self._unit_of_measurement = None
         self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
 
@@ -156,13 +167,7 @@ class OMVSensor(Entity):
     @property
     def icon(self):
         """Return the icon."""
-        self._icon = self._type[ATTR_ICON]
         return self._icon
-
-    @property
-    def device_class(self):
-        """Return the device_class."""
-        return None
 
     @property
     def unique_id(self):
@@ -209,7 +214,9 @@ class OMVSensor(Entity):
         """Entity created."""
         _LOGGER.debug("New sensor %s (%s)", self._inst, self._sensor)
 
-
+# ---------------------------
+#   OMVFileSystemSensor
+# ---------------------------
 class OMVFileSystemSensor(OMVSensor):
     """Define an OpenMediaVault FS sensor."""
 
@@ -276,7 +283,9 @@ class OMVFileSystemSensor(OMVSensor):
 
         return attributes
 
-
+# ---------------------------
+#   OMVDiskSensor
+# ---------------------------
 class OMVDiskSensor(OMVSensor):
     """Define an OpenMediaVault Disk sensor."""
 

@@ -20,7 +20,9 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-
+# ---------------------------
+#   async_setup_entry
+# ---------------------------
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up device tracker for OpenMediaVault component."""
     inst = config_entry.data[CONF_NAME]
@@ -37,7 +39,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
     update_controller()
 
-
+# ---------------------------
+#   update_items
+# ---------------------------
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
     """Update sensor state from controller."""
@@ -59,7 +63,9 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
     if new_sensors:
         async_add_entities(new_sensors, True)
 
-
+# ---------------------------
+#   OMVBinarySensor
+# ---------------------------
 class OMVBinarySensor(BinarySensorEntity):
     """Define an OMV Binary Sensor."""
 
@@ -72,10 +78,8 @@ class OMVBinarySensor(BinarySensorEntity):
         self._type = BINARY_SENSOR_TYPES[sensor]
         self._attr = BINARY_SENSOR_TYPES[sensor][ATTR_ATTR]
 
-        self._device_class = None
         self._state = None
         self._icon = None
-        self._unit_of_measurement = None
         self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
 
     @property
@@ -100,7 +104,7 @@ class OMVBinarySensor(BinarySensorEntity):
 
     @property
     def device_info(self):
-        """Return a port description for device registry."""
+        """Return a description for device registry."""
         info = {
             "manufacturer": "OpenMediaVault",
             "name": f"{self._inst} {self._type[ATTR_GROUP]}",

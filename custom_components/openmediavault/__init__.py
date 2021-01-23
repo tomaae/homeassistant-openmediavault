@@ -3,14 +3,18 @@
 from .const import DATA_CLIENT, DOMAIN
 from .omv_controller import OMVControllerData
 
-
+# ---------------------------
+#   async_setup
+# ---------------------------
 async def async_setup(hass, _config):
     """Set up configured OMV Controller."""
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN][DATA_CLIENT] = {}
     return True
 
-
+# ---------------------------
+#   async_setup_entry
+# ---------------------------
 async def async_setup_entry(hass, config_entry):
     """Set up OMV config entry."""
     controller = OMVControllerData(hass, config_entry)
@@ -39,7 +43,9 @@ async def async_setup_entry(hass, config_entry):
 
     return True
 
-
+# ---------------------------
+#   async_unload_entry
+# ---------------------------
 async def async_unload_entry(hass, config_entry):
     """Unload OMV config entry."""
     controller = hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id]
