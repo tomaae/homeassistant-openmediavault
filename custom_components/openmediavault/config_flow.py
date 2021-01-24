@@ -1,35 +1,27 @@
 """Config flow to configure OpenMediaVault."""
 
-import logging
-
 import voluptuous as vol
-from homeassistant.config_entries import (
-    CONN_CLASS_LOCAL_POLL,
-    ConfigFlow,
-)
+from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
 from homeassistant.const import (
-    CONF_NAME,
     CONF_HOST,
-    CONF_USERNAME,
+    CONF_NAME,
     CONF_PASSWORD,
     CONF_SSL,
+    CONF_USERNAME,
 )
 from homeassistant.core import callback
 
 from .const import (
-    DOMAIN,
-    DEFAULT_HOST,
-    DEFAULT_USERNAME,
-    DEFAULT_PASSWORD,
-    DEFAULT_DEVICE_NAME,
-    DEFAULT_SSL,
     CONF_SSL_VERIFY,
+    DEFAULT_DEVICE_NAME,
+    DEFAULT_HOST,
+    DEFAULT_PASSWORD,
+    DEFAULT_SSL,
     DEFAULT_SSL_VERIFY,
+    DEFAULT_USERNAME,
+    DOMAIN,
 )
 from .omv_api import OpenMediaVaultAPI
-
-_LOGGER = logging.getLogger(__name__)
-
 
 # ---------------------------
 #   configured_instances
@@ -43,19 +35,19 @@ def configured_instances(hass):
 
 
 # ---------------------------
-#   OpenMediaVaultConfigFlow
+#   OMVConfigFlow
 # ---------------------------
-class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
-    """OpenMediaVaultConfigFlow class"""
+class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
+    """OMVConfigFlow class."""
 
     VERSION = 1
     CONNECTION_CLASS = CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
-        """Initialize OpenMediaVaultConfigFlow."""
+        """Initialize OMVConfigFlow."""
 
     async def async_step_import(self, user_input=None):
-        """Occurs when a previously entry setup fails and is re-initiated."""
+        """Occurs when a previous entry setup fails and is re-initiated."""
         return await self.async_step_user(user_input)
 
     async def async_step_user(self, user_input=None):
@@ -98,11 +90,8 @@ class OpenMediaVaultConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    # ---------------------------
-    #   _show_config_form
-    # ---------------------------
     def _show_config_form(self, user_input, errors=None):
-        """Show the configuration form to edit data."""
+        """Show the configuration form."""
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(

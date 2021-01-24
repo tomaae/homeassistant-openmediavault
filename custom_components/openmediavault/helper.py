@@ -6,12 +6,11 @@ from voluptuous import Optional
 
 _LOGGER = logging.getLogger(__name__)
 
-
 # ---------------------------
 #   from_entry
 # ---------------------------
 def from_entry(entry, param, default="") -> str:
-    """Validate and return str value from Mikrotik API dict"""
+    """Validate and return str value from OMV API dict"""
     if param not in entry:
         return default
 
@@ -22,7 +21,7 @@ def from_entry(entry, param, default="") -> str:
 #   from_entry_bool
 # ---------------------------
 def from_entry_bool(entry, param, default=False, reverse=False) -> bool:
-    """Validate and return a bool value from a Mikrotik API dict"""
+    """Validate and return a bool value from a OMV API dict"""
     if param not in entry:
         return default
 
@@ -52,7 +51,7 @@ def parse_api(
     only=None,
     skip=None,
 ) -> dict:
-    """Get data from API"""
+    """Get data from API."""
     if type(source) == dict:
         tmp = source
         source = [tmp]
@@ -135,7 +134,7 @@ def get_uid(entry, key, key_secondary, key_search, keymap) -> Optional(str):
 #   generate_keymap
 # ---------------------------
 def generate_keymap(data, key_search) -> Optional(dict):
-    """Generate keymap"""
+    """Generate keymap."""
     if not key_search:
         return None
 
@@ -153,7 +152,7 @@ def generate_keymap(data, key_search) -> Optional(dict):
 #   matches_only
 # ---------------------------
 def matches_only(entry, only) -> bool:
-    """Return True if all variables are matched"""
+    """Return True if all variables are matched."""
     ret = False
     for val in only:
         if val["key"] in entry and entry[val["key"]] == val["value"]:
@@ -169,7 +168,7 @@ def matches_only(entry, only) -> bool:
 #   can_skip
 # ---------------------------
 def can_skip(entry, skip) -> bool:
-    """Return True if at least one variable matches"""
+    """Return True if at least one variable matches."""
     ret = False
     for val in skip:
         if val["name"] in entry and entry[val["name"]] == val["value"]:
@@ -183,7 +182,7 @@ def can_skip(entry, skip) -> bool:
 #   fill_defaults
 # ---------------------------
 def fill_defaults(data, vals) -> dict:
-    """Fill defaults if source is not present"""
+    """Fill defaults if source is not present."""
     for val in vals:
         _name = val["name"]
         _type = val["type"] if "type" in val else "str"
@@ -248,7 +247,7 @@ def fill_vals(data, entry, uid, vals) -> dict:
 #   fill_ensure_vals
 # ---------------------------
 def fill_ensure_vals(data, uid, ensure_vals) -> dict:
-    """Add required keys which are not available in data"""
+    """Add required keys which are not available in data."""
     for val in ensure_vals:
         if uid:
             if val["name"] not in data[uid]:
@@ -266,7 +265,7 @@ def fill_ensure_vals(data, uid, ensure_vals) -> dict:
 #   fill_vals_proc
 # ---------------------------
 def fill_vals_proc(data, uid, vals_proc) -> dict:
-    """Add custom keys"""
+    """Add custom keys."""
     _data = data[uid] if uid else data
     for val_sub in vals_proc:
         _name = None

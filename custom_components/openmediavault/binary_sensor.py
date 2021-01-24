@@ -1,49 +1,24 @@
-"""Support for the OpenMediaVault binary sensor service."""
+"""Support for the OpenMediaVault binary sensor platform."""
 
 import logging
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.const import (
-    CONF_NAME,
-    ATTR_ATTRIBUTION,
-)
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from .const import (
-    DOMAIN,
-    DATA_CLIENT,
     ATTRIBUTION,
+    DATA_CLIENT,
+    DOMAIN,
+    ATTR_LABEL,
+    ATTR_GROUP,
+    ATTR_PATH,
+    ATTR_ATTR,
+    BINARY_SENSOR_TYPES,
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-ATTR_LABEL = "label"
-ATTR_GROUP = "group"
-ATTR_PATH = "data_path"
-ATTR_ATTR = "data_attr"
-
-SENSOR_TYPES = {
-    "system_pkgUpdatesAvailable": {
-        ATTR_LABEL: "Update available",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "pkgUpdatesAvailable",
-    },
-    "system_rebootRequired": {
-        ATTR_LABEL: "Reboot pending",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "rebootRequired",
-    },
-    "system_configDirty": {
-        ATTR_LABEL: "Config dirty",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "configDirty",
-    },
-}
-
 
 # ---------------------------
 #   async_setup_entry
@@ -70,10 +45,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 # ---------------------------
 @callback
 def update_items(inst, omv_controller, async_add_entities, sensors):
-    """Update sensor state from the controller."""
+    """Update sensor state from controller."""
     new_sensors = []
 
-    for sensor in SENSOR_TYPES:
+    for sensor in BINARY_SENSOR_TYPES:
         item_id = f"{inst}-{sensor}"
         _LOGGER.debug("Updating binary_sensor %s", item_id)
         if item_id in sensors:
@@ -81,7 +56,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
                 sensors[item_id].async_schedule_update_ha_state()
             continue
 
-        sensors[item_id] = MikrotikControllerBinarySensor(
+        sensors[item_id] = OMVBinarySensor(
             omv_controller=omv_controller, inst=inst, sensor=sensor
         )
         new_sensors.append(sensors[item_id])
@@ -90,27 +65,28 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
         async_add_entities(new_sensors, True)
 
 
-class MikrotikControllerBinarySensor(BinarySensorEntity):
-    """Define an Mikrotik Controller Binary Sensor."""
+# ---------------------------
+#   OMVBinarySensor
+# ---------------------------
+class OMVBinarySensor(BinarySensorEntity):
+    """Define an OMV Binary Sensor."""
 
     def __init__(self, omv_controller, inst, sensor):
         """Initialize."""
         self._inst = inst
         self._sensor = sensor
         self._ctrl = omv_controller
-        self._data = omv_controller.data[SENSOR_TYPES[sensor][ATTR_PATH]]
-        self._type = SENSOR_TYPES[sensor]
-        self._attr = SENSOR_TYPES[sensor][ATTR_ATTR]
+        self._data = omv_controller.data[BINARY_SENSOR_TYPES[sensor][ATTR_PATH]]
+        self._type = BINARY_SENSOR_TYPES[sensor]
+        self._attr = BINARY_SENSOR_TYPES[sensor][ATTR_ATTR]
 
-        self._device_class = None
         self._state = None
         self._icon = None
-        self._unit_of_measurement = None
         self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
 
     @property
     def name(self):
-        """Return the name."""
+        """Return the name of the sensor."""
         return f"{self._inst} {self._type[ATTR_LABEL]}"
 
     @property
@@ -130,7 +106,7 @@ class MikrotikControllerBinarySensor(BinarySensorEntity):
 
     @property
     def device_info(self):
-        """Return a port description for device registry."""
+        """Return a description for device registry."""
         info = {
             "manufacturer": "OpenMediaVault",
             "name": f"{self._inst} {self._type[ATTR_GROUP]}",
@@ -146,12 +122,12 @@ class MikrotikControllerBinarySensor(BinarySensorEntity):
         """Synchronize state with controller."""
 
     async def async_added_to_hass(self):
-        """Port entity created."""
+        """Entity created."""
         _LOGGER.debug("New sensor %s (%s)", self._inst, self._sensor)
 
     @property
     def is_on(self):
-        """Return true if sensor is on."""
+        """Return true if binary sensor is on."""
         val = False
         if self._attr in self._data:
             val = self._data[self._attr]

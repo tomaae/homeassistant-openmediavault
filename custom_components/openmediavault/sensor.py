@@ -1,15 +1,28 @@
-"""Support for the OpenMediaVault sensor service."""
+"""Support for the OpenMediaVault sensor platform."""
 
 import logging
+from re import search as re_search
 
-from homeassistant.const import CONF_NAME, ATTR_ATTRIBUTION
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, DATA_CLIENT, ATTRIBUTION
-
-from re import search as re_search
+from .const import (
+    ATTRIBUTION,
+    DATA_CLIENT,
+    DOMAIN,
+    ATTR_ICON,
+    ATTR_LABEL,
+    ATTR_UNIT,
+    ATTR_UNIT_ATTR,
+    ATTR_GROUP,
+    ATTR_PATH,
+    ATTR_ATTR,
+    SENSOR_TYPES,
+    DEVICE_ATTRIBUTES_FS,
+    DEVICE_ATTRIBUTES_DISK,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,73 +40,6 @@ def format_attribute(attr):
     return res
 
 
-ATTR_ICON = "icon"
-ATTR_LABEL = "label"
-ATTR_UNIT = "unit"
-ATTR_UNIT_ATTR = "unit_attr"
-ATTR_GROUP = "group"
-ATTR_PATH = "data_path"
-ATTR_ATTR = "data_attr"
-
-SENSOR_TYPES = {
-    "system_cpuUsage": {
-        ATTR_ICON: "mdi:speedometer",
-        ATTR_LABEL: "CPU load",
-        ATTR_UNIT: "%",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "cpuUsage",
-    },
-    "system_memUsage": {
-        ATTR_ICON: "mdi:memory",
-        ATTR_LABEL: "Memory",
-        ATTR_UNIT: "%",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "memUsage",
-    },
-    "system_uptimeEpoch": {
-        ATTR_ICON: "mdi:clock-outline",
-        ATTR_LABEL: "Uptime",
-        ATTR_UNIT: "hours",
-        ATTR_GROUP: "System",
-        ATTR_PATH: "hwinfo",
-        ATTR_ATTR: "uptimeEpoch",
-    },
-}
-
-DEVICE_ATTRIBUTES_FS = [
-    "size",
-    "available",
-    "type",
-    "mountpoint",
-    "_readonly",
-    "_used",
-]
-
-DEVICE_ATTRIBUTES_DISK = [
-    "canonicaldevicefile",
-    "size",
-    "israid",
-    "isroot",
-    "devicemodel",
-    "serialnumber",
-    "firmwareversion",
-    "sectorsize",
-    "rotationrate",
-    "writecacheis",
-    "smartsupportis",
-    "Raw_Read_Error_Rate",
-    "Spin_Up_Time",
-    "Start_Stop_Count",
-    "Reallocated_Sector_Ct",
-    "Seek_Error_Rate",
-    "Load_Cycle_Count",
-    "UDMA_CRC_Error_Count",
-    "Multi_Zone_Error_Rate",
-]
-
-
 # ---------------------------
 #   async_setup_entry
 # ---------------------------
@@ -103,6 +49,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     omv_controller = hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id]
     sensors = {}
 
+    # ---------------------------
+    #   update_contoller
+    # ---------------------------
     @callback
     def update_controller():
         """Update the values of the controller."""
@@ -132,7 +81,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
                 sensors[item_id].async_schedule_update_ha_state()
             continue
 
-        sensors[item_id] = OpenMediaVaultSensor(
+        sensors[item_id] = OMVSensor(
             omv_controller=omv_controller, inst=inst, sensor=sensor
         )
         new_sensors.append(sensors[item_id])
@@ -149,7 +98,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
         # Attr
         [DEVICE_ATTRIBUTES_FS, DEVICE_ATTRIBUTES_DISK],
         # Tracker function
-        [OpenMediaVaultFSSensor, OpenMediaVaultDiskSensor],
+        [OMVFileSystemSensor, OMVDiskSensor],
     ):
         for uid in omv_controller.data[sid]:
             # Update entity
@@ -179,9 +128,9 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
 
 
 # ---------------------------
-#   OpenMediaVaultSensor
+#   OMVSensor
 # ---------------------------
-class OpenMediaVaultSensor(Entity):
+class OMVSensor(Entity):
     """Define an OpenMediaVault sensor."""
 
     def __init__(self, omv_controller, inst, sensor=None):
@@ -193,10 +142,9 @@ class OpenMediaVaultSensor(Entity):
             self._data = omv_controller.data[SENSOR_TYPES[sensor][ATTR_PATH]]
             self._type = SENSOR_TYPES[sensor]
             self._attr = SENSOR_TYPES[sensor][ATTR_ATTR]
+            self._icon = self._type[ATTR_ICON]
 
-        self._device_class = None
         self._state = None
-        self._icon = None
         self._unit_of_measurement = None
         self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
 
@@ -222,13 +170,7 @@ class OpenMediaVaultSensor(Entity):
     @property
     def icon(self):
         """Return the icon."""
-        self._icon = self._type[ATTR_ICON]
         return self._icon
-
-    @property
-    def device_class(self):
-        """Return the device_class."""
-        return None
 
     @property
     def unique_id(self):
@@ -258,7 +200,12 @@ class OpenMediaVaultSensor(Entity):
         }
         if ATTR_GROUP in self._type:
             info["identifiers"] = {
-                (DOMAIN, self._inst, "sensor", self._type[ATTR_GROUP],)
+                (
+                    DOMAIN,
+                    self._inst,
+                    "sensor",
+                    self._type[ATTR_GROUP],
+                )
             }
 
         return info
@@ -272,9 +219,9 @@ class OpenMediaVaultSensor(Entity):
 
 
 # ---------------------------
-#   OpenMediaVaultFSSensor
+#   OMVFileSystemSensor
 # ---------------------------
-class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
+class OMVFileSystemSensor(OMVSensor):
     """Define an OpenMediaVault FS sensor."""
 
     def __init__(self, omv_controller, inst, uid, sid_data):
@@ -286,7 +233,7 @@ class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
 
     @property
     def name(self):
-        """Return the name."""
+        """Return the name of the sensor."""
         return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
 
     @property
@@ -342,9 +289,9 @@ class OpenMediaVaultFSSensor(OpenMediaVaultSensor):
 
 
 # ---------------------------
-#   OpenMediaVaultDiskSensor
+#   OMVDiskSensor
 # ---------------------------
-class OpenMediaVaultDiskSensor(OpenMediaVaultSensor):
+class OMVDiskSensor(OMVSensor):
     """Define an OpenMediaVault Disk sensor."""
 
     def __init__(self, omv_controller, inst, uid, sid_data):
@@ -356,7 +303,7 @@ class OpenMediaVaultDiskSensor(OpenMediaVaultSensor):
 
     @property
     def name(self):
-        """Return the name."""
+        """Return the name of the sensor."""
         return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
 
     @property

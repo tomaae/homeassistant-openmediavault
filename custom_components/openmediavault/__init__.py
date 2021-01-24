@@ -1,16 +1,7 @@
-"""OpenMediaVault integration"""
+"""The OpenMediaVault integration."""
 
-import logging
-
-from .const import (
-    DOMAIN,
-    DATA_CLIENT,
-)
-
-from .omv_controller import OpenMediaVaultControllerData
-
-_LOGGER = logging.getLogger(__name__)
-
+from .const import DATA_CLIENT, DOMAIN
+from .omv_controller import OMVControllerData
 
 # ---------------------------
 #   async_setup
@@ -27,7 +18,7 @@ async def async_setup(hass, _config):
 # ---------------------------
 async def async_setup_entry(hass, config_entry):
     """Set up OMV config entry."""
-    controller = OpenMediaVaultControllerData(hass, config_entry)
+    controller = OMVControllerData(hass, config_entry)
     await controller.async_hwinfo_update()
     await controller.async_update()
     await controller.async_init()
