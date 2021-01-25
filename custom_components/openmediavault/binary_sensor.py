@@ -1,4 +1,4 @@
-"""Support for the OpenMediaVault binary sensor platform."""
+"""OpenMediaVault binary sensor platform."""
 
 import logging
 

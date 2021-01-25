@@ -7,12 +7,12 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_PASSWORD,
     CONF_SSL,
+    CONF_VERIFY_SSL,
     CONF_USERNAME,
 )
 from homeassistant.core import callback
 
 from .const import (
-    CONF_SSL_VERIFY,
     DEFAULT_DEVICE_NAME,
     DEFAULT_HOST,
     DEFAULT_PASSWORD,
@@ -65,7 +65,7 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                 username=user_input[CONF_USERNAME],
                 password=user_input[CONF_PASSWORD],
                 use_ssl=user_input[CONF_SSL],
-                verify_ssl=user_input[CONF_SSL_VERIFY],
+                verify_ssl=user_input[CONF_VERIFY_SSL],
             )
             if not api.connect():
                 errors[CONF_HOST] = api.error
@@ -85,7 +85,7 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_USERNAME: DEFAULT_USERNAME,
                 CONF_PASSWORD: DEFAULT_PASSWORD,
                 CONF_SSL: DEFAULT_SSL,
-                CONF_SSL_VERIFY: DEFAULT_SSL_VERIFY,
+                CONF_VERIFY_SSL: DEFAULT_SSL_VERIFY,
             },
             errors=errors,
         )
@@ -102,7 +102,7 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_PASSWORD, default=user_input[CONF_PASSWORD]): str,
                     vol.Optional(CONF_SSL, default=user_input[CONF_SSL]): bool,
                     vol.Optional(
-                        CONF_SSL_VERIFY, default=user_input[CONF_SSL_VERIFY]
+                        CONF_VERIFY_SSL, default=user_input[CONF_VERIFY_SSL]
                     ): bool,
                 }
             ),
