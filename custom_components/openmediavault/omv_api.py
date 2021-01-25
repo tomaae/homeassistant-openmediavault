@@ -162,7 +162,7 @@ class OpenMediaVaultAPI(object):
                 return False
 
             if not data["response"]["authenticated"]:
-                _LOGGER.error("OpenMediaVault %s authenticated failed", self._host)
+                _LOGGER.error("OpenMediaVault %s authentication failed", self._host)
                 self.error_to_strings()
                 self._connection = None
                 self.lock.release()
@@ -208,7 +208,7 @@ class OpenMediaVaultAPI(object):
         """Translate error output to error string."""
         self.error = "cannot_connect"
         if "Incorrect username or password" in error:
-            self.error = "wrong_login"
+            self.error = "invalid_auth"
 
         if "certificate verify failed" in error:
             self.error = "ssl_verify_failed"
