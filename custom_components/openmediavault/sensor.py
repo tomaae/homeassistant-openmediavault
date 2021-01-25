@@ -1,9 +1,9 @@
-"""Support for the OpenMediaVault sensor platform."""
+"""OpenMediaVault sensor platform."""
 
 import logging
 from re import search as re_search
 
-from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, TEMP_CELSIUS, PERCENTAGE
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
@@ -274,7 +274,7 @@ class OMVFileSystemSensor(OMVSensor):
     @property
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
-        return "%"
+        return PERCENTAGE
 
     @property
     def device_state_attributes(self):
@@ -347,7 +347,7 @@ class OMVDiskSensor(OMVSensor):
     @property
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
-        return "°C"
+        return TEMP_CELSIUS
 
     @property
     def device_state_attributes(self):
