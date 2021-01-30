@@ -9,12 +9,13 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_SSL,
     CONF_USERNAME,
+    CONF_VERIFY_SSL,
 )
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import CONF_SSL_VERIFY, DOMAIN
+from .const import DOMAIN
 from .helper import parse_api
 from .omv_api import OpenMediaVaultAPI
 
@@ -47,7 +48,7 @@ class OMVControllerData(object):
             config_entry.data[CONF_USERNAME],
             config_entry.data[CONF_PASSWORD],
             config_entry.data[CONF_SSL],
-            config_entry.data[CONF_SSL_VERIFY],
+            config_entry.data[CONF_VERIFY_SSL],
         )
 
         self._force_update_callback = None
