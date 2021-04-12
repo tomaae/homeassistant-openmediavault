@@ -37,7 +37,7 @@ CHANGES = """
 
 """
 
-CHANGE = "- [{line}]({link}) @{author}\n"
+CHANGE = "- [{line}]({link})\n"
 NOCHANGE = "_No changes in this release._"
 
 GITHUB = Github(sys.argv[2])
