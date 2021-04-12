@@ -1,6 +1,8 @@
 """Config flow to configure OpenMediaVault."""
 
 import voluptuous as vol
+import logging
+_LOGGER = logging.getLogger(__name__)
 from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
 from homeassistant.const import (
     CONF_HOST,
@@ -59,15 +61,15 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "name_exists"
 
             # Test connection
-            api = OpenMediaVaultAPI(
-                self.hass,
-                host=user_input[CONF_HOST],
-                username=user_input[CONF_USERNAME],
-                password=user_input[CONF_PASSWORD],
-                use_ssl=user_input[CONF_SSL],
-                verify_ssl=user_input[CONF_VERIFY_SSL],
-            )
-            if not api.connect():
+            api = await self.hass.async_add_executor_job(OpenMediaVaultAPI, self.hass,
+                user_input[CONF_HOST],
+                user_input[CONF_USERNAME],
+                user_input[CONF_PASSWORD],
+                user_input[CONF_SSL],
+                user_input[CONF_VERIFY_SSL])
+
+            if not await self.hass.async_add_executor_job(api.connect):
+                _LOGGER.error("OpenMediaVault %s connect error", api.error)
                 errors[CONF_HOST] = api.error
 
             # Save instance
