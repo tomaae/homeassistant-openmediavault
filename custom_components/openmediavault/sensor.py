@@ -6,7 +6,7 @@ from re import search as re_search
 from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, TEMP_CELSIUS, PERCENTAGE
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import Entity
+from homeassistant.components.sensor import SensorEntity
 
 from .const import (
     ATTRIBUTION,
@@ -130,7 +130,7 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
 # ---------------------------
 #   OMVSensor
 # ---------------------------
-class OMVSensor(Entity):
+class OMVSensor(SensorEntity):
     """Define an OpenMediaVault sensor."""
 
     def __init__(self, omv_controller, inst, sensor=None):
