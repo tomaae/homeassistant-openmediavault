@@ -2,6 +2,7 @@
 
 import voluptuous as vol
 import logging
+
 _LOGGER = logging.getLogger(__name__)
 from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
 from homeassistant.const import (
@@ -61,12 +62,15 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "name_exists"
 
             # Test connection
-            api = await self.hass.async_add_executor_job(OpenMediaVaultAPI, self.hass,
+            api = await self.hass.async_add_executor_job(
+                OpenMediaVaultAPI,
+                self.hass,
                 user_input[CONF_HOST],
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
                 user_input[CONF_SSL],
-                user_input[CONF_VERIFY_SSL])
+                user_input[CONF_VERIFY_SSL],
+            )
 
             if not await self.hass.async_add_executor_job(api.connect):
                 _LOGGER.error("OpenMediaVault %s connect error", api.error)
