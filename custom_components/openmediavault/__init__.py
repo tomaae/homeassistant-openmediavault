@@ -2,6 +2,7 @@
 
 from .const import DATA_CLIENT, DOMAIN
 from .omv_controller import OMVControllerData
+from homeassistant.const import CONF_HOST
 
 # ---------------------------
 #   async_setup
@@ -37,6 +38,7 @@ async def async_setup_entry(hass, config_entry):
     device_registry = await hass.helpers.device_registry.async_get_registry()
     device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
+        connections={(DOMAIN, config_entry.data[CONF_HOST])},
         manufacturer="OpenMediaVault",
         name=controller.data["hwinfo"]["hostname"],
         sw_version=controller.data["hwinfo"]["version"],
