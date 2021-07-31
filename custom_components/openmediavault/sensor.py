@@ -142,73 +142,34 @@ class OMVSensor(SensorEntity):
             self._data = omv_controller.data[SENSOR_TYPES[sensor][ATTR_PATH]]
             self._type = SENSOR_TYPES[sensor]
             self._attr = SENSOR_TYPES[sensor][ATTR_ATTR]
-            self._icon = self._type[ATTR_ICON]
+            self._attr_icon = self._type[ATTR_ICON]
 
+        self._attr_available = self._ctrl.connected()
         self._state = None
-        self._unit_of_measurement = None
-        self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
+        self._attr_extra_state_attributes = {ATTR_ATTRIBUTION: ATTRIBUTION}
+        self._attr_name = f"{self._inst} {self._type[ATTR_LABEL]}"
+        self._attr_unique_id = f"{self._inst.lower()}-{self._sensor.lower()}"
 
-    @property
-    def name(self):
-        """Return the name."""
-        return f"{self._inst} {self._type[ATTR_LABEL]}"
-
-    @property
-    def state(self):
-        """Return the state."""
-        val = "unknown"
-        if self._attr in self._data:
-            val = self._data[self._attr]
-
-        return val
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes."""
-        return self._attrs
-
-    @property
-    def icon(self):
-        """Return the icon."""
-        return self._icon
-
-    @property
-    def unique_id(self):
-        """Return a unique_id for this entity."""
-        return f"{self._inst.lower()}-{self._sensor.lower()}"
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
+        self._attr_unit_of_measurement = None
         if ATTR_UNIT_ATTR in self._type:
-            return self._data[SENSOR_TYPES[self._sensor][ATTR_UNIT_ATTR]]
-
+            self._attr_unit_of_measurement = self._data[
+                SENSOR_TYPES[self._sensor][ATTR_UNIT_ATTR]
+            ]
         if ATTR_UNIT in self._type:
-            return self._type[ATTR_UNIT]
+            self._attr_unit_of_measurement = self._type[ATTR_UNIT]
 
-    @property
-    def available(self) -> bool:
-        """Return if controller is available."""
-        return self._ctrl.connected()
-
-    @property
-    def device_info(self):
-        """Return a port description for device registry."""
-        info = {
+        self._attr_device_info = {
             "manufacturer": "OpenMediaVault",
             "name": f"{self._inst} {self._type[ATTR_GROUP]}",
         }
         if ATTR_GROUP in self._type:
-            info["identifiers"] = {
-                (
-                    DOMAIN,
-                    self._inst,
-                    "sensor",
-                    self._type[ATTR_GROUP],
-                )
+            self._attr_device_info["identifiers"] = {
+                (DOMAIN, self._inst, "sensor", self._type[ATTR_GROUP])
             }
 
-        return info
+        self._attr_state = "unknown"
+        if self._attr in self._data:
+            self._attr_state = self._data[self._attr]
 
     async def async_update(self):
         """Synchronize state with controller."""
@@ -230,27 +191,17 @@ class OMVFileSystemSensor(OMVSensor):
         self._sid_data = sid_data
         self._uid = uid
         self._data = omv_controller.data[self._sid_data["sid"]][uid]
+        self._attr_icon = "mdi:file-tree"
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
-
-    @property
-    def unique_id(self):
-        """Return a unique_id for this entity."""
-        return f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
-
-    @property
-    def device_info(self):
-        """Return a port description for device registry."""
-        info = {
+        self._attr_name = f"{self._inst} {self._data[self._sid_data['sid_name']]}"
+        self._attr_unique_id = f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
+        self._attr_device_info = {
             "identifiers": {(DOMAIN, self._inst, "sensor", "Filesystem")},
             "manufacturer": "OpenMediaVault",
             "name": f"{self._inst} Filesystem",
         }
-
-        return info
+        self._attr_unit_of_measurement = PERCENTAGE
+        self._attr_state = self._data["percentage"]
 
     async def async_added_to_hass(self):
         """Entity created."""
@@ -262,24 +213,9 @@ class OMVFileSystemSensor(OMVSensor):
         )
 
     @property
-    def icon(self):
-        """Return the icon."""
-        return "mdi:file-tree"
-
-    @property
-    def state(self):
-        """Return the state."""
-        return self._data["percentage"]
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
-        return PERCENTAGE
-
-    @property
     def device_state_attributes(self):
         """Return the port state attributes."""
-        attributes = self._attrs
+        attributes = self._extra_state_attributes
 
         for variable in self._sid_data["sid_attr"]:
             if variable in self._data:
@@ -300,27 +236,16 @@ class OMVDiskSensor(OMVSensor):
         self._sid_data = sid_data
         self._uid = uid
         self._data = omv_controller.data[self._sid_data["sid"]][uid]
+        self._attr_icon = "mdi:harddisk"
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
-
-    @property
-    def unique_id(self):
-        """Return a unique_id for this entity."""
-        return f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
-
-    @property
-    def device_info(self):
-        """Return a port description for device registry."""
-        info = {
+        self._attr_name = f"{self._inst} {self._data[self._sid_data['sid_name']]}"
+        self._attr_unique_id = f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
+        self._attr_device_info = {
             "identifiers": {(DOMAIN, self._inst, "sensor", "Disk")},
             "manufacturer": "OpenMediaVault",
             "name": f"{self._inst} Disk",
         }
-
-        return info
+        self._attr_unit_of_measurement = TEMP_CELSIUS
 
     async def async_added_to_hass(self):
         """Entity created."""
@@ -332,11 +257,6 @@ class OMVDiskSensor(OMVSensor):
         )
 
     @property
-    def icon(self):
-        """Return the icon."""
-        return "mdi:harddisk"
-
-    @property
     def state(self):
         """Return the state."""
         if self._data["Temperature_Celsius"] == "unknown":
@@ -345,14 +265,9 @@ class OMVDiskSensor(OMVSensor):
         return re_search("[0-9]+", self._data["Temperature_Celsius"]).group()
 
     @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
-        return TEMP_CELSIUS
-
-    @property
     def device_state_attributes(self):
         """Return the port state attributes."""
-        attributes = self._attrs
+        attributes = self.self._extra_state_attributes
 
         for variable in self._sid_data["sid_attr"]:
             if variable in self._data:

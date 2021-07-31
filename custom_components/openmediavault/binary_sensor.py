@@ -8,14 +8,14 @@ from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from .const import (
+    ATTR_ATTR,
+    ATTR_GROUP,
+    ATTR_LABEL,
+    ATTR_PATH,
     ATTRIBUTION,
+    BINARY_SENSOR_TYPES,
     DATA_CLIENT,
     DOMAIN,
-    ATTR_LABEL,
-    ATTR_GROUP,
-    ATTR_PATH,
-    ATTR_ATTR,
-    BINARY_SENSOR_TYPES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -82,41 +82,22 @@ class OMVBinarySensor(BinarySensorEntity):
 
         self._state = None
         self._icon = None
-        self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
+        self._attr_extra_state_attributes = {ATTR_ATTRIBUTION: ATTRIBUTION}
+        self._attr_name = f"{self._inst} {self._type[ATTR_LABEL]}"
+        self._attr_unique_id = f"{self._inst.lower()}-{self._sensor.lower()}"
+        self._attr_available = self._ctrl.connected()
+        self._attr_is_on = False
+        if self._attr in self._data:
+            self._attr_is_on = self._data[self._attr]
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self._inst} {self._type[ATTR_LABEL]}"
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes."""
-        return self._attrs
-
-    @property
-    def unique_id(self):
-        """Return a unique_id for this entity."""
-        return f"{self._inst.lower()}-{self._sensor.lower()}"
-
-    @property
-    def available(self) -> bool:
-        """Return if controller is available."""
-        return self._ctrl.connected()
-
-    @property
-    def device_info(self):
-        """Return a description for device registry."""
-        info = {
+        self._attr_device_info = {
             "manufacturer": "OpenMediaVault",
             "name": f"{self._inst} {self._type[ATTR_GROUP]}",
         }
         if ATTR_GROUP in self._type:
-            info["identifiers"] = {
+            self._attr_device_info["identifiers"] = {
                 (DOMAIN, self._inst, "sensor", self._type[ATTR_GROUP])
             }
-
-        return info
 
     async def async_update(self):
         """Synchronize state with controller."""
@@ -124,12 +105,3 @@ class OMVBinarySensor(BinarySensorEntity):
     async def async_added_to_hass(self):
         """Entity created."""
         _LOGGER.debug("New sensor %s (%s)", self._inst, self._sensor)
-
-    @property
-    def is_on(self):
-        """Return true if binary sensor is on."""
-        val = False
-        if self._attr in self._data:
-            val = self._data[self._attr]
-
-        return val
