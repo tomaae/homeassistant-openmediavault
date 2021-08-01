@@ -267,7 +267,7 @@ class OMVDiskSensor(OMVSensor):
     @property
     def device_state_attributes(self):
         """Return the port state attributes."""
-        attributes = self.self._extra_state_attributes
+        attributes = self._extra_state_attributes
 
         for variable in self._sid_data["sid_attr"]:
             if variable in self._data:
