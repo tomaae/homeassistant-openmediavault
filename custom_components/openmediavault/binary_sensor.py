@@ -86,9 +86,6 @@ class OMVBinarySensor(BinarySensorEntity):
         self._attr_name = f"{self._inst} {self._type[ATTR_LABEL]}"
         self._attr_unique_id = f"{self._inst.lower()}-{self._sensor.lower()}"
         self._attr_available = self._ctrl.connected()
-        self._attr_is_on = False
-        if self._attr in self._data:
-            self._attr_is_on = self._data[self._attr]
 
         self._attr_device_info = {
             "manufacturer": "OpenMediaVault",
@@ -105,3 +102,12 @@ class OMVBinarySensor(BinarySensorEntity):
     async def async_added_to_hass(self):
         """Entity created."""
         _LOGGER.debug("New sensor %s (%s)", self._inst, self._sensor)
+
+    @property
+    def is_on(self):
+        """Return true if binary sensor is on."""
+        val = False
+        if self._attr in self._data:
+            val = self._data[self._attr]
+
+        return val
