@@ -168,7 +168,7 @@ class OMVControllerData(object):
             ensure_vals=[{"name": "memUsage", "default": 0}],
         )
 
-        tmp = self.data["hwinfo"]["uptime"].split(" ")
+        tmp = self.data["hwinfo"]["uptime"]#.split(" ")
         self.data["hwinfo"]["uptimeEpoch"] = int(tmp[0]) * 24 + int(tmp[2])
         self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
         if int(self.data["hwinfo"]["memTotal"]) > 0:
