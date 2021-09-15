@@ -1,6 +1,7 @@
 """OpenMediaVault Controller."""
 
 import asyncio
+import time
 from datetime import timedelta
 
 from homeassistant.const import (
@@ -168,7 +169,22 @@ class OMVControllerData(object):
             ensure_vals=[{"name": "memUsage", "default": 0}],
         )
 
-        tmp = self.data["hwinfo"]["uptime"].split(" ")
+        if int(self.data["hwinfo"]["version"].split(".")[0])>5:
+            tmp = self.data["hwinfo"]["uptime"]
+            pos = abs( int(tmp) )
+            day = pos / (3600*24)
+            rem = pos % (3600*24)
+            hour = rem / 3600
+            rem = rem % 3600
+            mins = rem / 60
+            secs = rem % 60
+            res = '%d days %02d hours %02d minutes %02d seconds' % (day, hour, mins, secs)
+            if int(tmp) < 0:
+                res = "-%s" % res
+            tmp = res.split(" ")
+        else:
+            tmp = self.data["hwinfo"]["uptime"].split(" ")
+            
         self.data["hwinfo"]["uptimeEpoch"] = int(tmp[0]) * 24 + int(tmp[2])
         self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
         if int(self.data["hwinfo"]["memTotal"]) > 0:
