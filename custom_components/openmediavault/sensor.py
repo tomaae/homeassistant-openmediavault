@@ -163,7 +163,7 @@ class OMVSensor(SensorEntity):
         return val
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attrs
 
@@ -277,7 +277,7 @@ class OMVFileSystemSensor(OMVSensor):
         return PERCENTAGE
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the port state attributes."""
         attributes = self._attrs
 
@@ -350,7 +350,7 @@ class OMVDiskSensor(OMVSensor):
         return TEMP_CELSIUS
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the port state attributes."""
         attributes = self._attrs
 
