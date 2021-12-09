@@ -90,7 +90,7 @@ class OMVBinarySensor(BinarySensorEntity):
         return f"{self._inst} {self._type[ATTR_LABEL]}"
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attrs
 
