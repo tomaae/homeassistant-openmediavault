@@ -1,9 +1,3 @@
-{% if installed %}
-{% if version_installed.replace("v", "").replace(".","") | int < 110  %}
-**IMPORTANT: Integration needs to be re-added after update.**
-{% endif %}
-{% endif %}
-
 ![OpenMediaVault Logo](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/header.png)
 
 Monitor your OpenMediaVault 5 NAS from Home Assistant.
