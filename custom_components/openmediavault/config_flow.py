@@ -18,7 +18,6 @@ from homeassistant.core import callback
 from .const import (
     DEFAULT_DEVICE_NAME,
     DEFAULT_HOST,
-    DEFAULT_PASSWORD,
     DEFAULT_SSL,
     DEFAULT_SSL_VERIFY,
     DEFAULT_USERNAME,
@@ -89,7 +88,7 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_NAME: DEFAULT_DEVICE_NAME,
                 CONF_HOST: DEFAULT_HOST,
                 CONF_USERNAME: DEFAULT_USERNAME,
-                CONF_PASSWORD: DEFAULT_PASSWORD,
+                CONF_PASSWORD: DEFAULT_USERNAME,
                 CONF_SSL: DEFAULT_SSL,
                 CONF_VERIFY_SSL: DEFAULT_SSL_VERIFY,
             },

@@ -6,7 +6,6 @@ ATTRIBUTION = "Data provided by OpenMediaVault integration"
 
 DEFAULT_HOST = "10.0.0.1"
 DEFAULT_USERNAME = "admin"
-DEFAULT_PASSWORD = "openmediavault"
 
 DEFAULT_DEVICE_NAME = "OMV"
 DEFAULT_SSL = False
