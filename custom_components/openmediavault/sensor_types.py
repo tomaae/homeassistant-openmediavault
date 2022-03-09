@@ -89,8 +89,8 @@ SENSOR_TYPES = {
     ),
     "system_uptimeEpoch": OMVSensorEntityDescription(
         key="system_uptimeEpoch",
-        name="Memory",
-        icon=None,
+        name="Uptime",
+        icon="mdi:clock-outline",
         native_unit_of_measurement=None,
         device_class=SensorDeviceClass.TIMESTAMP,
         state_class=None,
@@ -121,7 +121,7 @@ SENSOR_TYPES = {
     "disk": OMVSensorEntityDescription(
         key="disk",
         name="",
-        icon="mdi:thermometer",
+        icon="mdi:harddisk",
         native_unit_of_measurement=TEMP_CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
