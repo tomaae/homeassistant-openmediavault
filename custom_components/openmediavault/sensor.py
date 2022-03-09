@@ -3,14 +3,11 @@
 import logging
 from typing import Any, Optional
 from collections.abc import Mapping
-from re import search as re_search
 
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
     CONF_NAME,
     CONF_HOST,
-    TEMP_CELSIUS,
-    PERCENTAGE,
 )
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.components.sensor import SensorEntity
@@ -25,8 +22,6 @@ from .const import (
 from .sensor_types import (
     OMVSensorEntityDescription,
     SENSOR_TYPES,
-    DEVICE_ATTRIBUTES_FS,
-    DEVICE_ATTRIBUTES_DISK,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,56 +69,35 @@ def update_items(inst, omv_controller, async_add_entities, sensors):
     """Update sensor state from the controller."""
     new_sensors = []
 
-    # # Add sensors
-    # for sensor in SENSOR_TYPES:
-    #     item_id = f"{inst}-{sensor}"
-    #     _LOGGER.debug("Updating sensor %s", item_id)
-    #     if item_id in sensors:
-    #         if sensors[item_id].enabled:
-    #             sensors[item_id].async_schedule_update_ha_state()
-    #         continue
-    #
-    #     sensors[item_id] = OMVSensor(
-    #         omv_controller=omv_controller, inst=inst, sensor=sensor
-    #     )
-    #     new_sensors.append(sensors[item_id])
+    for sensor, sid_func in zip(
+        # Sensor type name
+        [
+            "fs",
+            "disk",
+        ],
+        # Entity function
+        [
+            OMVSensor,
+            OMVSensor,
+        ],
+    ):
+        uid_sensor = SENSOR_TYPES[sensor]
+        for uid in omv_controller.data[uid_sensor.data_path]:
+            uid_data = omv_controller.data[uid_sensor.data_path]
+            item_id = f"{inst}-{sensor}-{uid_data[uid][uid_sensor.data_reference]}"
+            _LOGGER.debug("Updating sensor %s", item_id)
+            if item_id in sensors:
+                if sensors[item_id].enabled:
+                    sensors[item_id].async_schedule_update_ha_state()
+                continue
 
-    # for sid, sid_uid, sid_name, sid_ref, sid_attr, sid_func in zip(
-    #     # Data point name
-    #     ["fs", "disk"],
-    #     # Data point unique id
-    #     ["uuid", "devicename"],
-    #     # Entry Name
-    #     ["label", "devicename"],
-    #     # Entry Unique id
-    #     ["uuid", "devicename"],
-    #     # Attr
-    #     [DEVICE_ATTRIBUTES_FS, DEVICE_ATTRIBUTES_DISK],
-    #     # Tracker function
-    #     [OMVFileSystemSensor, OMVDiskSensor],
-    # ):
-    #     for uid in omv_controller.data[sid]:
-    #         # Update entity
-    #         item_id = f"{inst}-{sid}-{omv_controller.data[sid][uid][sid_uid]}"
-    #         _LOGGER.debug("Updating sensor %s", item_id)
-    #         if item_id in sensors:
-    #             if sensors[item_id].enabled:
-    #                 sensors[item_id].async_schedule_update_ha_state()
-    #             continue
-    #
-    #         # Create new entity
-    #         sid_data = {
-    #             "sid": sid,
-    #             "sid_uid": sid_uid,
-    #             "sid_name": sid_name,
-    #             "sid_ref": sid_ref,
-    #             "sid_attr": sid_attr,
-    #         }
-    #         sensors[item_id] = sid_func(
-    #             omv_controller=omv_controller, inst=inst, uid=uid, sid_data=sid_data
-    #         )
-    #
-    #         new_sensors.append(sensors[item_id])
+            sensors[item_id] = sid_func(
+                inst=inst,
+                uid=uid,
+                omv_controller=omv_controller,
+                entity_description=uid_sensor,
+            )
+            new_sensors.append(sensors[item_id])
 
     for sensor in SENSOR_TYPES:
         if sensor.startswith("system_"):
@@ -233,7 +207,6 @@ class OMVSensor(SensorEntity):
         dev_connection_value = self.entity_description.data_reference
         dev_group = self.entity_description.ha_group
         if self.entity_description.ha_group == "System":
-            # dev_group = self._ctrl.data["resource"]["board-name"]
             dev_connection_value = self._ctrl.data["hwinfo"]["hostname"]
 
         if self.entity_description.ha_group.startswith("data__"):
@@ -255,7 +228,6 @@ class OMVSensor(SensorEntity):
             connections={(dev_connection, f"{dev_connection_value}")},
             identifiers={(dev_connection, f"{dev_connection_value}")},
             default_name=f"{self._inst} {dev_group}",
-            # model=f"{self._ctrl.data['resource']['board-name']}",
             manufacturer="OpenMediaVault",
             sw_version=f"{self._ctrl.data['hwinfo']['version']}",
             configuration_url=f"http://{self._ctrl.config_entry.data[CONF_HOST]}",
@@ -277,146 +249,3 @@ class OMVSensor(SensorEntity):
     async def async_added_to_hass(self):
         """Run when entity about to be added to hass."""
         _LOGGER.debug("New sensor %s (%s)", self._inst, self.unique_id)
-
-
-# ---------------------------
-#   OMVFileSystemSensor
-# ---------------------------
-class OMVFileSystemSensor(OMVSensor):
-    """Define an OpenMediaVault FS sensor."""
-
-    def __init__(self, omv_controller, inst, uid, sid_data):
-        """Initialize."""
-        super().__init__(omv_controller, inst)
-        self._sid_data = sid_data
-        self._uid = uid
-        self._data = omv_controller.data[self._sid_data["sid"]][uid]
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
-
-    @property
-    def unique_id(self):
-        """Return a unique_id for this entity."""
-        return f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
-
-    @property
-    def device_info(self):
-        """Return a port description for device registry."""
-        info = {
-            "identifiers": {(DOMAIN, self._inst, "sensor", "Filesystem")},
-            "manufacturer": "OpenMediaVault",
-            "name": f"{self._inst} Filesystem",
-        }
-
-        return info
-
-    async def async_added_to_hass(self):
-        """Entity created."""
-        _LOGGER.debug(
-            "New sensor %s (%s %s)",
-            self._inst,
-            self._sid_data["sid"],
-            self._data[self._sid_data["sid_uid"]],
-        )
-
-    @property
-    def icon(self):
-        """Return the icon."""
-        return "mdi:file-tree"
-
-    @property
-    def state(self):
-        """Return the state."""
-        return self._data["percentage"]
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
-        return PERCENTAGE
-
-    @property
-    def extra_state_attributes(self):
-        """Return the port state attributes."""
-        attributes = self._attrs
-
-        for variable in self._sid_data["sid_attr"]:
-            if variable in self._data:
-                attributes[format_attribute(variable)] = self._data[variable]
-
-        return attributes
-
-
-# ---------------------------
-#   OMVDiskSensor
-# ---------------------------
-class OMVDiskSensor(OMVSensor):
-    """Define an OpenMediaVault Disk sensor."""
-
-    def __init__(self, omv_controller, inst, uid, sid_data):
-        """Initialize."""
-        super().__init__(omv_controller, inst)
-        self._sid_data = sid_data
-        self._uid = uid
-        self._data = omv_controller.data[self._sid_data["sid"]][uid]
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return f"{self._inst} {self._data[self._sid_data['sid_name']]}"
-
-    @property
-    def unique_id(self):
-        """Return a unique_id for this entity."""
-        return f"{self._inst.lower()}-{self._sid_data['sid']}-{self._data[self._sid_data['sid_ref']]}"
-
-    @property
-    def device_info(self):
-        """Return a port description for device registry."""
-        info = {
-            "identifiers": {(DOMAIN, self._inst, "sensor", "Disk")},
-            "manufacturer": "OpenMediaVault",
-            "name": f"{self._inst} Disk",
-        }
-
-        return info
-
-    async def async_added_to_hass(self):
-        """Entity created."""
-        _LOGGER.debug(
-            "New sensor %s (%s %s)",
-            self._inst,
-            self._sid_data["sid"],
-            self._data[self._sid_data["sid_uid"]],
-        )
-
-    @property
-    def icon(self):
-        """Return the icon."""
-        return "mdi:harddisk"
-
-    @property
-    def state(self):
-        """Return the state."""
-        if self._data["Temperature_Celsius"] == "unknown":
-            return self._data["Temperature_Celsius"]
-
-        return re_search("[0-9]+", self._data["Temperature_Celsius"]).group()
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
-        return TEMP_CELSIUS
-
-    @property
-    def extra_state_attributes(self):
-        """Return the port state attributes."""
-        attributes = self._attrs
-
-        for variable in self._sid_data["sid_attr"]:
-            if variable in self._data:
-                attributes[format_attribute(variable)] = self._data[variable]
-
-        return attributes

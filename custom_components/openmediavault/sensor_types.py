@@ -7,9 +7,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
     SensorEntityDescription,
 )
-from homeassistant.const import (
-    PERCENTAGE,
-)
+from homeassistant.const import PERCENTAGE, TEMP_CELSIUS
 
 DEVICE_ATTRIBUTES_FS = [
     "size",
@@ -103,5 +101,37 @@ SENSOR_TYPES = {
         data_name="",
         data_uid="",
         data_reference="",
+    ),
+    "fs": OMVSensorEntityDescription(
+        key="fs",
+        name="",
+        icon="mdi:file-tree",
+        native_unit_of_measurement=PERCENTAGE,
+        device_class=None,
+        state_class=None,
+        entity_category=None,
+        ha_group="Filesystem",
+        data_path="fs",
+        data_attribute="percentage",
+        data_name="label",
+        data_uid="",
+        data_reference="uuid",
+        data_attributes_list=DEVICE_ATTRIBUTES_FS,
+    ),
+    "disk": OMVSensorEntityDescription(
+        key="disk",
+        name="",
+        icon="mdi:thermometer",
+        native_unit_of_measurement=TEMP_CELSIUS,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=None,
+        ha_group="Disk",
+        data_path="disk",
+        data_attribute="Temperature_Celsius",
+        data_name="devicename",
+        data_uid="",
+        data_reference="devicename",
+        data_attributes_list=DEVICE_ATTRIBUTES_DISK,
     ),
 }
