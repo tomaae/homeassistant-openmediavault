@@ -1,6 +1,6 @@
 """The OpenMediaVault integration."""
 
-from .const import DATA_CLIENT, DOMAIN
+from .const import DOMAIN
 from .omv_controller import OMVControllerData
 from homeassistant.const import CONF_HOST
 
@@ -10,7 +10,6 @@ from homeassistant.const import CONF_HOST
 async def async_setup(hass, _config):
     """Set up configured OMV Controller."""
     hass.data[DOMAIN] = {}
-    hass.data[DOMAIN][DATA_CLIENT] = {}
     return True
 
 
@@ -24,7 +23,7 @@ async def async_setup_entry(hass, config_entry):
     await controller.async_update()
     await controller.async_init()
 
-    hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id] = controller
+    hass.data[DOMAIN][config_entry.entry_id] = controller
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, "sensor")
     )
@@ -52,10 +51,10 @@ async def async_setup_entry(hass, config_entry):
 # ---------------------------
 async def async_unload_entry(hass, config_entry):
     """Unload OMV config entry."""
-    controller = hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id]
+    controller = hass.data[DOMAIN][config_entry.entry_id]
     await hass.config_entries.async_forward_entry_unload(config_entry, "sensor")
     await hass.config_entries.async_forward_entry_unload(config_entry, "binary_sensor")
     # await hass.config_entries.async_forward_entry_unload(config_entry, "switch")
     await controller.async_reset()
-    hass.data[DOMAIN][DATA_CLIENT].pop(config_entry.entry_id)
+    hass.data[DOMAIN].pop(config_entry.entry_id)
     return True

@@ -2,7 +2,6 @@
 
 DOMAIN = "openmediavault"
 DEFAULT_NAME = "OpenMediaVault"
-DATA_CLIENT = "client"
 ATTRIBUTION = "Data provided by OpenMediaVault integration"
 
 DEFAULT_HOST = "10.0.0.1"

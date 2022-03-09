@@ -10,7 +10,6 @@ from homeassistant.components.sensor import SensorEntity
 
 from .const import (
     ATTRIBUTION,
-    DATA_CLIENT,
     DOMAIN,
     ATTR_ICON,
     ATTR_LABEL,
@@ -46,7 +45,7 @@ def format_attribute(attr):
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up device tracker for OpenMediaVault component."""
     inst = config_entry.data[CONF_NAME]
-    omv_controller = hass.data[DOMAIN][DATA_CLIENT][config_entry.entry_id]
+    omv_controller = hass.data[DOMAIN][config_entry.entry_id]
     sensors = {}
 
     # ---------------------------
