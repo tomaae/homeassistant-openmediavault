@@ -37,7 +37,7 @@ CHANGES = """
 
 """
 
-CHANGE = "- [{line}]({link})\n"
+CHANGE = "- [{line}]({link}) @{author}\n"
 NOCHANGE = "_No changes in this release._"
 
 GITHUB = Github(sys.argv[2])
@@ -103,9 +103,11 @@ def get_integration_commits(github, skip=True):
                 continue
             if "\n" in msg:
                 msg = msg.split("\n")[0]
-            changes += CHANGE.format(
-                line=msg, link=commit.html_url
-            )
+            if commit.author:
+                ath = commit.author
+            else:
+                ath = "Unknown"
+            changes += CHANGE.format(line=msg, link=commit.html_url, author=ath)
 
     return changes
 
