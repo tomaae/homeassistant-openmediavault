@@ -1,4 +1,10 @@
 """Constants used by the OpenMediaVault integration."""
+from homeassistant.const import Platform
+
+PLATFORMS = [
+    Platform.SENSOR,
+    Platform.BINARY_SENSOR,
+]
 
 DOMAIN = "openmediavault"
 DEFAULT_NAME = "OpenMediaVault"

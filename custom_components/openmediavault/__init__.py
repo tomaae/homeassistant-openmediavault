@@ -1,8 +1,9 @@
 """The OpenMediaVault integration."""
 
-from .const import DOMAIN
-from .omv_controller import OMVControllerData
 from homeassistant.const import CONF_HOST
+from .const import DOMAIN, PLATFORMS
+from .omv_controller import OMVControllerData
+
 
 # ---------------------------
 #   async_setup
@@ -11,6 +12,14 @@ async def async_setup(hass, _config):
     """Set up configured OMV Controller."""
     hass.data[DOMAIN] = {}
     return True
+
+
+# ---------------------------
+#   update_listener
+# ---------------------------
+async def update_listener(hass, config_entry) -> None:
+    """Handle options update."""
+    await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 # ---------------------------
@@ -24,24 +33,9 @@ async def async_setup_entry(hass, config_entry):
     await controller.async_init()
 
     hass.data[DOMAIN][config_entry.entry_id] = controller
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, "sensor")
-    )
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, "binary_sensor")
-    )
-    # hass.async_create_task(
-    #     hass.config_entries.async_forward_entry_setup(config_entry, "switch")
-    # )
 
-    device_registry = await hass.helpers.device_registry.async_get_registry()
-    device_registry.async_get_or_create(
-        config_entry_id=config_entry.entry_id,
-        connections={(DOMAIN, config_entry.data[CONF_HOST])},
-        manufacturer="OpenMediaVault",
-        name=controller.data["hwinfo"]["hostname"],
-        sw_version=controller.data["hwinfo"]["version"],
-    )
+    hass.config_entries.async_setup_platforms(config_entry, PLATFORMS)
+    config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
 
     return True
 
@@ -51,10 +45,12 @@ async def async_setup_entry(hass, config_entry):
 # ---------------------------
 async def async_unload_entry(hass, config_entry):
     """Unload OMV config entry."""
-    controller = hass.data[DOMAIN][config_entry.entry_id]
-    await hass.config_entries.async_forward_entry_unload(config_entry, "sensor")
-    await hass.config_entries.async_forward_entry_unload(config_entry, "binary_sensor")
-    # await hass.config_entries.async_forward_entry_unload(config_entry, "switch")
-    await controller.async_reset()
-    hass.data[DOMAIN].pop(config_entry.entry_id)
+    unload_ok = await hass.config_entries.async_unload_platforms(
+        config_entry, PLATFORMS
+    )
+    if unload_ok:
+        controller = hass.data[DOMAIN][config_entry.entry_id]
+        await controller.async_reset()
+        hass.data[DOMAIN].pop(config_entry.entry_id)
+
     return True
