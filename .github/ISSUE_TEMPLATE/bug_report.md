@@ -33,6 +33,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 -->
 
+
 ## Software versions
 <!--
 All fields in this sections are required.
@@ -40,6 +41,13 @@ All fields in this sections are required.
  - Home Assistant version: <!-- e.g. HA v0.108.3 -->
  - openmediavault integration version: <!-- e.g. v1.0.0 -->
  - openmediavault software version: <!-- e.g. v5.3.10 -->
+
+
+## Diagnostics data
+<!--
+  If you are seing incorrect data through the integration, please upload integration diagnostics data.
+-->
+
 
 ## Traceback/Error logs
 <!--
