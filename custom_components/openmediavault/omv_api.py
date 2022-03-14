@@ -118,7 +118,7 @@ class OpenMediaVaultAPI(object):
     # ---------------------------
     def connect(self) -> bool:
         """Connect API."""
-        self.error = ""
+        self.error = None
         self._connected = False
         self._connection_epoch = time()
         self._connection = requests.Session()
@@ -130,6 +130,7 @@ class OpenMediaVaultAPI(object):
             self._connection.cookies.update(cookies)
 
         self.lock.acquire()
+        error = False
         try:
             response = self._connection.post(
                 self._resource,
@@ -145,8 +146,11 @@ class OpenMediaVaultAPI(object):
                 ),
                 verify=self._ssl_verify,
             )
-            data = response.json()
 
+            if response.status_code != 200:
+                error = True
+
+            data = response.json()
             if data["error"] is not None:
                 if not self.connection_error_reported:
                     _LOGGER.error(
@@ -169,18 +173,14 @@ class OpenMediaVaultAPI(object):
                 return False
 
         except requests.exceptions.ConnectionError as api_error:
+            error = True
             _LOGGER.error(
                 "OpenMediaVault %s connection error: %s", self._host, api_error
             )
             self.error_to_strings("%s" % api_error)
             self._connection = None
-            self.lock.release()
-            return False
         except:
-            self.disconnect("connect")
-            self.lock.release()
-            return None
-
+            error = True
         else:
             if self.connection_error_reported:
                 _LOGGER.warning("OpenMediaVault %s reconnected", self._host)
@@ -191,13 +191,30 @@ class OpenMediaVaultAPI(object):
             self._connected = True
             self._reconnected = True
             self.lock.release()
-
-        # Save cookies
-        if self._connected:
             for cookie in self._connection.cookies:
                 self._cookie_jar.set_cookie(cookie)
 
             save_cookies(self._cookie_jar_file, self._cookie_jar)
+
+        # Socket errors
+        if error:
+            try:
+                errorcode = response.status_code
+            except:
+                errorcode = "no_respose"
+
+            if errorcode == 200:
+                errorcode = "cannot_connect"
+
+            _LOGGER.warning(
+                "OpenMediaVault %s connection error: %s", self._host, errorcode
+            )
+
+            error_code = errorcode
+            self.error = error_code
+            self._connected = False
+            self.disconnect("connect")
+            self.lock.release()
 
         return self._connected
 
@@ -235,6 +252,7 @@ class OpenMediaVaultAPI(object):
             options = {"updatelastaccess": False}
 
         self.lock.acquire()
+        error = False
         try:
             _LOGGER.debug(
                 "OpenMediaVault %s query: %s, %s, %s, %s",
@@ -257,13 +275,17 @@ class OpenMediaVaultAPI(object):
                 verify=self._ssl_verify,
             )
 
-            data = response.json()
-            _LOGGER.debug("OpenMediaVault %s query response: %s", self._host, data)
+            if response.status_code == 200:
+                data = response.json()
+                _LOGGER.debug("OpenMediaVault %s query response: %s", self._host, data)
+            else:
+                error = True
 
         except (
             requests.exceptions.ConnectionError,
             json.decoder.JSONDecodeError,
         ) as api_error:
+            error = True
             _LOGGER.warning("OpenMediaVault %s unable to fetch data", self._host)
             self.disconnect("query", api_error)
             self.lock.release()
@@ -273,7 +295,24 @@ class OpenMediaVaultAPI(object):
             self.lock.release()
             return None
 
-        self.lock.release()
+        # Socket errors
+        if error:
+            try:
+                errorcode = response.status_code
+            except:
+                errorcode = "no_respose"
+
+            _LOGGER.warning(
+                "OpenMediaVault %s unable to fetch data (%s)", self._host, errorcode
+            )
+
+            error_code = errorcode
+            self.error = error_code
+            self._connected = False
+            self.lock.release()
+            return None
+
+        # Api errors
         if data is not None and data["error"] is not None:
             error_message = data["error"]["message"]
             error_code = data["error"]["code"]
@@ -284,7 +323,11 @@ class OpenMediaVaultAPI(object):
                 or error_message == "Session expired."
             ):
                 _LOGGER.debug("OpenMediaVault %s session expired", self._host)
+                self.error = 5001
                 if self.connect():
                     return self.query(service, method, params, options)
+
+        self.error = None
+        self.lock.release()
 
         return data["response"]
