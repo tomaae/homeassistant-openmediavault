@@ -1,37 +1,80 @@
-"""Helper functions for OpenMediaVault."""
+"""API parser for JSON APIs"""
+
 
 import logging
+import pytz
+from datetime import datetime
 
 from voluptuous import Optional
+from homeassistant.components.diagnostics import async_redact_data
+from .const import TO_REDACT
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def utc_from_timestamp(timestamp: float) -> datetime:
+    """Return a UTC time from a timestamp."""
+    return pytz.utc.localize(datetime.utcfromtimestamp(timestamp))
+
 
 # ---------------------------
 #   from_entry
 # ---------------------------
 def from_entry(entry, param, default="") -> str:
-    """Validate and return str value from OMV API dict"""
-    if param not in entry:
+    """Validate and return str value an API dict"""
+    if "/" in param:
+        for tmp_param in param.split("/"):
+            if isinstance(entry, dict) and tmp_param in entry:
+                entry = entry[tmp_param]
+            else:
+                return default
+
+        ret = entry
+    elif param in entry:
+        ret = entry[param]
+    else:
         return default
 
-    return entry[param]
+    if default != "":
+        if isinstance(ret, str):
+            ret = str(ret)
+        elif isinstance(ret, int):
+            ret = int(ret)
+        elif isinstance(ret, float):
+            ret = round(float(ret), 2)
+
+    return ret[:255] if isinstance(ret, str) and len(ret) > 255 else ret
 
 
 # ---------------------------
 #   from_entry_bool
 # ---------------------------
 def from_entry_bool(entry, param, default=False, reverse=False) -> bool:
-    """Validate and return a bool value from a OMV API dict"""
-    if param not in entry:
-        return default
+    """Validate and return a bool value from an API dict"""
+    if "/" in param:
+        for tmp_param in param.split("/"):
+            if isinstance(entry, dict) and tmp_param in entry:
+                entry = entry[tmp_param]
+            else:
+                return default
 
-    if not reverse:
+        ret = entry
+    elif param in entry:
         ret = entry[param]
     else:
-        if entry[param]:
-            ret = False
-        else:
+        return default
+
+    if isinstance(ret, str):
+        if ret in ("on", "On", "ON", "yes", "Yes", "YES", "up", "Up", "UP"):
             ret = True
+        elif ret in ("off", "Off", "OFF", "no", "No", "NO", "down", "Down", "DOWN"):
+            ret = False
+
+    if not isinstance(ret, bool):
+        ret = default
+
+    if reverse:
+        return not ret
 
     return ret
 
@@ -52,6 +95,10 @@ def parse_api(
     skip=None,
 ) -> dict:
     """Get data from API."""
+    debug = False
+    if _LOGGER.getEffectiveLevel() == 10:
+        debug = True
+
     if type(source) == dict:
         tmp = source
         source = [tmp]
@@ -61,7 +108,8 @@ def parse_api(
             data = fill_defaults(data, vals)
         return data
 
-    _LOGGER.debug("Processing source %s", source)
+    if debug:
+        _LOGGER.debug("Processing source %s", async_redact_data(source, TO_REDACT))
 
     keymap = generate_keymap(data, key_search)
     for entry in source:
@@ -84,7 +132,9 @@ def parse_api(
             if uid not in data:
                 data[uid] = {}
 
-        _LOGGER.debug("Processing entry %s", entry)
+        if debug:
+            _LOGGER.debug("Processing entry %s", async_redact_data(entry, TO_REDACT))
+
         if vals:
             data = fill_vals(data, entry, uid, vals)
 
@@ -175,6 +225,10 @@ def can_skip(entry, skip) -> bool:
             ret = True
             break
 
+        if val["value"] == "" and val["name"] not in entry:
+            ret = True
+            break
+
     return ret
 
 
@@ -216,6 +270,7 @@ def fill_vals(data, entry, uid, vals) -> dict:
         _name = val["name"]
         _type = val["type"] if "type" in val else "str"
         _source = val["source"] if "source" in val else _name
+        _convert = val["convert"] if "convert" in val else None
 
         if _type == "str":
             _default = val["default"] if "default" in val else ""
@@ -239,6 +294,20 @@ def fill_vals(data, entry, uid, vals) -> dict:
                 data[_name] = from_entry_bool(
                     entry, _source, default=_default, reverse=_reverse
                 )
+
+        if _convert == "utc_from_timestamp":
+            if uid:
+                if isinstance(data[uid][_name], int) and data[uid][_name] > 0:
+                    if data[uid][_name] > 100000000000:
+                        data[uid][_name] = data[uid][_name] / 1000
+
+                    data[uid][_name] = utc_from_timestamp(data[uid][_name])
+            else:
+                if isinstance(data[_name], int) and data[_name] > 0:
+                    if data[_name] > 100000000000:
+                        data[_name] = data[_name] / 1000
+
+                    data[_name] = utc_from_timestamp(data[_name])
 
     return data
 
