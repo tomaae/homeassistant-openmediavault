@@ -18,9 +18,15 @@
         "error": {
             "name_exists": "Name already exists.",
             "cannot_connect": "Cannot connect to OpenMediaVault.",
-            "connection_timeout": "OpenMediaVault connection timeout.",
             "wrong_login": "Invalid user name or password.",
-            "ssl_verify_failed": "SSL certificate verify failed."
+            "ssl_verify_failed": "SSL certificate verify failed.",
+            "no_respose": "No response from host.",
+            "400": "Bad request.",
+            "401": "No authorization for this endpoint.",
+            "404": "API not found on this host.",
+            "500": "Internal error.",
+            "501": "Server does not support the functionality.",
+            "5001": "OpenMediaVault connection timeout."
         }
     }
 }
