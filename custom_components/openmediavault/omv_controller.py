@@ -331,6 +331,14 @@ class OMVControllerData(object):
 
             for tmp_val in vals:
                 if tmp_val in tmp_data:
+                    if (
+                        isinstance(tmp_data[tmp_val]["rawvalue"], str)
+                        and " " in tmp_data[tmp_val]["rawvalue"]
+                    ):
+                        tmp_data[tmp_val]["rawvalue"] = tmp_data[tmp_val][
+                            "rawvalue"
+                        ].split(" ")[0]
+
                     self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
 
     # ---------------------------
