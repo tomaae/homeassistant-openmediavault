@@ -54,25 +54,6 @@ jobs:
   #         pip install pytest
   #         pytest
 
-  security:
-    name: Security check - Bandit
-    needs: [tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code from GitHub
-        uses: "actions/checkout@v2"
-      - name: Security check - Bandit
-        uses: ioggstream/bandit-report-artifacts@v0.0.2
-        with:
-          project_path: custom_components/openmediavault
-          config_file: .github/bandit.yaml
-          ignore_failure: false
-      - name: Security check report artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: Security report
-          path: output/security_report.txt
-
   validate:
     name: Check hassfest
     needs: [tests]
