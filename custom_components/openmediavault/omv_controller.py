@@ -300,7 +300,10 @@ class OMVControllerData(object):
     # ---------------------------
     def get_smart(self):
         for uid in self.data["disk"]:
-            if "mmcblk" in self.data["disk"][uid]["canonicaldevicefile"]:
+            if self.data["disk"][uid]["devicename"].startswith("mmcblk"):
+                continue
+
+            if self.data["disk"][uid]["devicename"].startswith("sr"):
                 continue
 
             tmp_data = parse_api(
