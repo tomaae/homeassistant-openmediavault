@@ -174,9 +174,6 @@ class OpenMediaVaultAPI(object):
 
         except requests.exceptions.ConnectionError as api_error:
             error = True
-            _LOGGER.error(
-                "OpenMediaVault %s connection error: %s", self._host, api_error
-            )
             self.error_to_strings("%s" % api_error)
             self._connection = None
         except:

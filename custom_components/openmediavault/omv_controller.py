@@ -187,6 +187,9 @@ class OMVControllerData(object):
             ensure_vals=[{"name": "memUsage", "default": 0}],
         )
 
+        if not self.api.connected():
+            return
+
         tmp_uptime = 0
         if int(self.data["hwinfo"]["version"].split(".")[0]) > 5:
             tmp = self.data["hwinfo"]["uptime"]
@@ -265,7 +268,17 @@ class OMVControllerData(object):
             ],
         )
 
+    # ---------------------------
+    #   get_smart
+    # ---------------------------
+    def get_smart(self):
         for uid in self.data["disk"]:
+            if self.data["disk"][uid]["devicename"].startswith("mmcblk"):
+                continue
+
+            if self.data["disk"][uid]["devicename"].startswith("sr"):
+                continue
+
             tmp_data = parse_api(
                 data={},
                 source=self.api.query(
@@ -294,17 +307,6 @@ class OMVControllerData(object):
             self.data["disk"][uid]["rotationrate"] = tmp_data["rotationrate"]
             self.data["disk"][uid]["writecacheis"] = tmp_data["writecacheis"]
             self.data["disk"][uid]["smartsupportis"] = tmp_data["smartsupportis"]
-
-    # ---------------------------
-    #   get_smart
-    # ---------------------------
-    def get_smart(self):
-        for uid in self.data["disk"]:
-            if self.data["disk"][uid]["devicename"].startswith("mmcblk"):
-                continue
-
-            if self.data["disk"][uid]["devicename"].startswith("sr"):
-                continue
 
             tmp_data = parse_api(
                 data={},
