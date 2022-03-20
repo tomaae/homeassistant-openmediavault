@@ -207,7 +207,7 @@ class OMVControllerData(object):
                 secs,
             )
             if int(tmp) < 0:
-                res = "-%s" % res
+                res = f"-{res}"
             tmp = res.split(" ")
         else:
             tmp = self.data["hwinfo"]["uptime"].split(" ")

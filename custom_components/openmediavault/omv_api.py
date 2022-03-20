@@ -124,9 +124,7 @@ class OpenMediaVaultAPI(object):
         self._connection = requests.Session()
         self._cookie_jar = requests.cookies.RequestsCookieJar()
 
-        # Load cookies
-        cookies = load_cookies(self._cookie_jar_file)
-        if cookies:
+        if cookies := load_cookies(self._cookie_jar_file):
             self._connection.cookies.update(cookies)
 
         self.lock.acquire()
@@ -160,7 +158,7 @@ class OpenMediaVaultAPI(object):
                     )
                     self.connection_error_reported = True
 
-                self.error_to_strings("%s" % data["error"]["message"])
+                self.error_to_strings(f'{data["error"]["message"]}')
                 self._connection = None
                 self.lock.release()
                 return False
@@ -174,7 +172,7 @@ class OpenMediaVaultAPI(object):
 
         except requests.exceptions.ConnectionError as api_error:
             error = True
-            self.error_to_strings("%s" % api_error)
+            self.error_to_strings(f"{api_error}")
             self._connection = None
         except:
             error = True

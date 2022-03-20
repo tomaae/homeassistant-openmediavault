@@ -116,13 +116,12 @@ class OMVBinarySensor(BinarySensorEntity):
     @property
     def name(self) -> str:
         """Return the name."""
-        if self._uid:
-            if self.entity_description.name:
-                return f"{self._inst} {self._data[self.entity_description.data_name]} {self.entity_description.name}"
-
-            return f"{self._inst} {self._data[self.entity_description.data_name]}"
-        else:
+        if not self._uid:
             return f"{self._inst} {self.entity_description.name}"
+        if self.entity_description.name:
+            return f"{self._inst} {self._data[self.entity_description.data_name]} {self.entity_description.name}"
+
+        return f"{self._inst} {self._data[self.entity_description.data_name]}"
 
     @property
     def unique_id(self) -> str:
@@ -175,7 +174,7 @@ class OMVBinarySensor(BinarySensorEntity):
                 dev_connection_value = dev_connection_value[6:]
                 dev_connection_value = self._data[dev_connection_value]
 
-        info = DeviceInfo(
+        return DeviceInfo(
             connections={(dev_connection, f"{dev_connection_value}")},
             identifiers={(dev_connection, f"{dev_connection_value}")},
             default_name=f"{self._inst} {dev_group}",
@@ -184,8 +183,6 @@ class OMVBinarySensor(BinarySensorEntity):
             configuration_url=f"http://{self._ctrl.config_entry.data[CONF_HOST]}",
             via_device=(DOMAIN, f"{self._ctrl.data['hwinfo']['hostname']}"),
         )
-
-        return info
 
     @property
     def extra_state_attributes(self) -> Mapping[str, Any]:
