@@ -1,3 +1,8 @@
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/tomaae/homeassistant-openmediavault?style=plastic)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=plastic)](https://github.com/hacs/integration)
+![Project Stage](https://img.shields.io/badge/project%20stage-development-yellow.svg?style=plastic)
+![GitHub all releases](https://img.shields.io/github/downloads/tomaae/homeassistant-openmediavault/total?style=plastic)
+
 ![OpenMediaVault Logo](https://raw.githubusercontent.com/tomaae/homeassistant-openmediavault/master/docs/assets/images/ui/header.png)
 
 Monitor your OpenMediaVault 5/6 NAS from Home Assistant.
