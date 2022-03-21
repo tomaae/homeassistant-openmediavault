@@ -10,9 +10,15 @@ from homeassistant.components.binary_sensor import (
 from .const import DOMAIN
 
 
+DEVICE_ATTRIBUTES_SERVICE = {
+    "name",
+    "enabled",
+}
+
+
 @dataclass
 class OMVBinarySensorEntityDescription(BinarySensorEntityDescription):
-    """Class describing mikrotik entities."""
+    """Class describing OMV entities."""
 
     icon_enabled: str = ""
     icon_disabled: str = ""
@@ -69,5 +75,22 @@ SENSOR_TYPES = {
         data_name="",
         data_uid="",
         data_reference="",
+    ),
+    "service": OMVBinarySensorEntityDescription(
+        key="service",
+        name="service",
+        icon_enabled="mdi:cog",
+        icon_disabled="mdi:cog-off",
+        device_class=None,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        ha_group="Services",
+        ha_connection=DOMAIN,
+        ha_connection_value="Services",
+        data_path="service",
+        data_is_on="running",
+        data_name="name",
+        data_uid="name",
+        data_reference="name",
+        data_attributes_list=DEVICE_ATTRIBUTES_SERVICE,
     ),
 }

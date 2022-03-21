@@ -55,7 +55,7 @@ class OMVControllerData(object):
             "hwinfo": {},
             "disk": {},
             "fs": {},
-            # "service": {},
+            "service": {},
         }
 
         self.listeners = []
@@ -160,7 +160,8 @@ class OMVControllerData(object):
             await self.hass.async_add_executor_job(self.get_fs)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_smart)
-        # await self.hass.async_add_executor_job(self.get_service)
+        if self.api.connected():
+            await self.hass.async_add_executor_job(self.get_service)
 
         async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
@@ -383,16 +384,20 @@ class OMVControllerData(object):
     # ---------------------------
     #   get_service
     # ---------------------------
-    # def get_service(self):
-    #     """Get OMV services status"""
-    #     self.data["service"] = parse_api(
-    #         data=self.data["service"],
-    #         source=self.api.query("Services", "getStatus"),
-    #         key="name",
-    #         vals=[
-    #             {"name": "name"},
-    #             {"name": "title", "default": "unknown"},
-    #             {"name": "enabled", "type": "bool", "default": False},
-    #             {"name": "running", "type": "bool", "default": False},
-    #         ],
-    #     )
+    def get_service(self):
+        """Get OMV services status"""
+        tmp = self.api.query("Services", "getStatus")
+        if "data" in tmp:
+            tmp = tmp["data"]
+
+        self.data["service"] = parse_api(
+            data=self.data["service"],
+            source=tmp,
+            key="name",
+            vals=[
+                {"name": "name"},
+                {"name": "title", "default": "unknown"},
+                {"name": "enabled", "type": "bool", "default": False},
+                {"name": "running", "type": "bool", "default": False},
+            ],
+        )

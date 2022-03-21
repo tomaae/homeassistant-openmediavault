@@ -43,7 +43,7 @@ DEVICE_ATTRIBUTES_DISK = [
 
 @dataclass
 class OMVSensorEntityDescription(SensorEntityDescription):
-    """Class describing mikrotik entities."""
+    """Class describing OMV entities."""
 
     ha_group: str = ""
     ha_connection: str = ""

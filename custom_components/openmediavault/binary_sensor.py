@@ -49,6 +49,35 @@ def update_items(inst, config_entry, omv_controller, async_add_entities, sensors
     """Update sensor state from controller."""
     new_sensors = []
 
+    for sensor, sid_func in zip(
+        # Sensor type name
+        [
+            "service",
+        ],
+        # Entity function
+        [
+            OMVBinarySensor,
+        ],
+    ):
+        uid_sensor = SENSOR_TYPES[sensor]
+        for uid in omv_controller.data[uid_sensor.data_path]:
+            uid_data = omv_controller.data[uid_sensor.data_path]
+            item_id = f"{inst}-{sensor}-{str(uid_data[uid][uid_sensor.data_reference]).lower()}"
+            _LOGGER.debug("Updating sensor %s", item_id)
+            if item_id in sensors:
+                if sensors[item_id].enabled:
+                    sensors[item_id].async_schedule_update_ha_state()
+                continue
+
+            sensors[item_id] = sid_func(
+                inst=inst,
+                uid=uid,
+                omv_controller=omv_controller,
+                entity_description=uid_sensor,
+                config_entry=config_entry,
+            )
+            new_sensors.append(sensors[item_id])
+
     for sensor in SENSOR_TYPES:
         if sensor.startswith("system_"):
             uid_sensor = SENSOR_TYPES[sensor]
