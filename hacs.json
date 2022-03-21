@@ -2,7 +2,7 @@
     "name": "OpenMediaVault",
     "homeassistant": "2022.2.0",
     "iot_class": "local_poll",
-    "domains": ["sensor", "binary_sensor", "switch"],
+    "domains": ["sensor", "binary_sensor"],
     "render_readme": false,
     "zip_release": true,
     "filename": "openmediavault.zip"
