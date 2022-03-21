@@ -53,6 +53,7 @@ class OMVControllerData(object):
 
         self.data = {
             "hwinfo": {},
+            "plugin": {},
             "disk": {},
             "fs": {},
             "service": {},
@@ -129,6 +130,8 @@ class OMVControllerData(object):
             return
 
         await self.hass.async_add_executor_job(self.get_hwinfo)
+        if self.api.connected():
+            await self.hass.async_add_executor_job(self.get_plugin)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_disk)
 
@@ -399,5 +402,20 @@ class OMVControllerData(object):
                 {"name": "title", "default": "unknown"},
                 {"name": "enabled", "type": "bool", "default": False},
                 {"name": "running", "type": "bool", "default": False},
+            ],
+        )
+
+    # ---------------------------
+    #   get_plugin
+    # ---------------------------
+    def get_plugin(self):
+        """Get OMV plugin status"""
+        self.data["plugin"] = parse_api(
+            data=self.data["plugin"],
+            source=self.api.query("Plugin", "enumeratePlugins"),
+            key="name",
+            vals=[
+                {"name": "name"},
+                {"name": "installed", "type": "bool", "default": False},
             ],
         )
