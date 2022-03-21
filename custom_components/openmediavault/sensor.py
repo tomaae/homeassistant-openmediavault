@@ -13,7 +13,7 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-
+from .helper import format_attribute
 from .const import (
     DOMAIN,
     ATTRIBUTION,
@@ -25,19 +25,6 @@ from .sensor_types import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-
-# ---------------------------
-#   format_attribute
-# ---------------------------
-def format_attribute(attr):
-    """Format state attributes"""
-    res = attr.replace("-", " ")
-    res = res.capitalize()
-    res = res.replace(" ip ", " IP ")
-    res = res.replace(" mac ", " MAC ")
-    res = res.replace(" mtu", " MTU")
-    return res
 
 
 # ---------------------------

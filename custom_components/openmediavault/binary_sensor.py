@@ -8,7 +8,7 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, CONF_HOST
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-
+from .helper import format_attribute
 from .const import (
     ATTRIBUTION,
     DOMAIN,
@@ -19,19 +19,6 @@ from .binary_sensor_types import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-
-# ---------------------------
-#   format_attribute
-# ---------------------------
-def format_attribute(attr):
-    """Format state attributes"""
-    res = attr.replace("-", " ")
-    res = res.capitalize()
-    res = res.replace(" ip ", " IP ")
-    res = res.replace(" mac ", " MAC ")
-    res = res.replace(" mtu", " MTU")
-    return res
 
 
 # ---------------------------
