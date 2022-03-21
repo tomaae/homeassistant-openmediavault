@@ -13,6 +13,7 @@ from voluptuous import Optional
 
 _LOGGER = logging.getLogger(__name__)
 
+
 # ---------------------------
 #   load_cookies
 # ---------------------------
@@ -125,8 +126,7 @@ class OpenMediaVaultAPI(object):
         self._cookie_jar = requests.cookies.RequestsCookieJar()
 
         # Load cookies
-        cookies = load_cookies(self._cookie_jar_file)
-        if cookies:
+        if cookies := load_cookies(self._cookie_jar_file):
             self._connection.cookies.update(cookies)
 
         self.lock.acquire()
@@ -282,7 +282,6 @@ class OpenMediaVaultAPI(object):
             requests.exceptions.ConnectionError,
             json.decoder.JSONDecodeError,
         ) as api_error:
-            error = True
             _LOGGER.warning("OpenMediaVault %s unable to fetch data", self._host)
             self.disconnect("query", api_error)
             self.lock.release()
