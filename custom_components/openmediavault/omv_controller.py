@@ -373,7 +373,10 @@ class OMVControllerData(object):
                 {"name": "_readonly", "type": "bool", "default": False},
                 {"name": "_used", "type": "bool", "default": False},
             ],
-            skip=[{"name": "type", "value": "swap"}],
+            skip=[
+                {"name": "type", "value": "swap"},
+                {"name": "type", "value": "iso9660"},
+            ],
         )
 
         for uid in self.data["fs"]:
