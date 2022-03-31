@@ -179,7 +179,7 @@ class OMVControllerData(object):
             source=self.api.query("System", "getInformation"),
             vals=[
                 {"name": "hostname", "default": "unknown"},
-                {"name": "version", "default": "unknown"},
+                {"name": "version", "default": "4.0 or lower"},
                 {"name": "cpuUsage", "default": 0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
@@ -195,25 +195,24 @@ class OMVControllerData(object):
             return
 
         tmp_uptime = 0
-        if self.data["hwinfo"]["version"].split(".")[0]) != 'unknown':
-            if int(self.data["hwinfo"]["version"].split(".")[0]) > 5:
-                tmp = self.data["hwinfo"]["uptime"]
-                pos = abs(int(tmp))
-                day = pos / (3600 * 24)
-                rem = pos % (3600 * 24)
-                hour = rem / 3600
-                rem = rem % 3600
-                mins = rem / 60
-                secs = rem % 60
-                res = "%d days %02d hours %02d minutes %02d seconds" % (
-                    day,
-                    hour,
-                    mins,
-                    secs,
-                )
-                if int(tmp) < 0:
-                    res = "-%s" % res
-                tmp = res.split(" ")
+        if int(self.data["hwinfo"]["version"].split(".")[0]) > 5:
+            tmp = self.data["hwinfo"]["uptime"]
+            pos = abs(int(tmp))
+            day = pos / (3600 * 24)
+            rem = pos % (3600 * 24)
+            hour = rem / 3600
+            rem = rem % 3600
+            mins = rem / 60
+            secs = rem % 60
+            res = "%d days %02d hours %02d minutes %02d seconds" % (
+                day,
+                hour,
+                mins,
+                secs,
+            )
+            if int(tmp) < 0:
+                res = "-%s" % res
+            tmp = res.split(" ")
         else:
             tmp = self.data["hwinfo"]["uptime"].split(" ")
 
