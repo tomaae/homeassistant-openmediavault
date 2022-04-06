@@ -126,7 +126,7 @@ class OMVControllerData(object):
         """Update OpenMediaVault hardware info."""
         try:
             await asyncio.wait_for(self.lock.acquire(), timeout=30)
-        except:
+        except Exception:
             return
 
         await self.hass.async_add_executor_job(self.get_hwinfo)
@@ -155,7 +155,7 @@ class OMVControllerData(object):
 
         try:
             await asyncio.wait_for(self.lock.acquire(), timeout=10)
-        except:
+        except Exception:
             return
 
         await self.hass.async_add_executor_job(self.get_hwinfo)
