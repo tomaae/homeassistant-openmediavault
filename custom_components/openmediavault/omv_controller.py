@@ -282,6 +282,9 @@ class OMVControllerData(object):
             if self.data["disk"][uid]["devicename"].startswith("sr"):
                 continue
 
+            if self.data["disk"][uid]["devicename"].startswith("bcache"):
+                continue
+
             tmp_data = parse_api(
                 data={},
                 source=self.api.query(
