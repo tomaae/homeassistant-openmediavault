@@ -246,7 +246,7 @@ class OpenMediaVaultAPI(object):
             params = {}
 
         if not options:
-            options = {"updatelastaccess": False}
+            options = {"updatelastaccess": True}
 
         self.lock.acquire()
         error = False
