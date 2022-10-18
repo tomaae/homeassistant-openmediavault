@@ -19,7 +19,7 @@
             "cannot_connect": "Cannot connect to OpenMediaVault.",
             "wrong_login": "Invalid user name or password.",
             "ssl_verify_failed": "SSL certificate verify failed.",
-            "no_respose": "No response from host.",
+            "no_response": "No response from host.",
             "400": "Bad request.",
             "401": "No authorization for this endpoint.",
             "404": "API not found on this host.",
