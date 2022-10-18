@@ -198,7 +198,7 @@ class OpenMediaVaultAPI(object):
             try:
                 errorcode = response.status_code
             except:
-                errorcode = "no_respose"
+                errorcode = "no_response"
 
             if errorcode == 200:
                 errorcode = "cannot_connect"
