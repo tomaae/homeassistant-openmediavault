@@ -54,6 +54,7 @@ class OMVSensorEntityDescription(SensorEntityDescription):
     data_uid: str = ""
     data_reference: str = ""
     data_attributes_list: List = field(default_factory=lambda: [])
+    func: str = "OMVSensor"
 
 
 SENSOR_TYPES = {
@@ -135,3 +136,5 @@ SENSOR_TYPES = {
         data_attributes_list=DEVICE_ATTRIBUTES_DISK,
     ),
 }
+
+SENSOR_SERVICES = []

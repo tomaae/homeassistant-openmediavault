@@ -70,13 +70,24 @@ def model_update_items(
         uid_sensor = sensor_types[sensor]
         if not uid_sensor.data_reference:
             uid_sensor = sensor_types[sensor]
-            if (
-                uid_sensor.data_attribute
-                not in omv_controller.data[uid_sensor.data_path]
-                or omv_controller.data[uid_sensor.data_path][uid_sensor.data_attribute]
-                == "unknown"
-            ):
-                continue
+            if hasattr(uid_sensor, "data_attribute"):
+                if (
+                    uid_sensor.data_attribute
+                    not in omv_controller.data[uid_sensor.data_path]
+                    or omv_controller.data[uid_sensor.data_path][
+                        uid_sensor.data_attribute
+                    ]
+                    == "unknown"
+                ):
+                    continue
+            elif hasattr(uid_sensor, "data_is_on"):
+                if (
+                    uid_sensor.data_is_on
+                    not in omv_controller.data[uid_sensor.data_path]
+                    or omv_controller.data[uid_sensor.data_path][uid_sensor.data_is_on]
+                    == "unknown"
+                ):
+                    continue
 
             item_id = f"{inst}-{sensor}"
             if tmp := _register_entity(sensors, item_id, "", uid_sensor):
@@ -153,7 +164,7 @@ class OMVEntity:
         dev_connection_value = f"{self._ctrl.name}_{self.entity_description.ha_group}"
         dev_group = self.entity_description.ha_group
         if self.entity_description.ha_group == "System":
-            dev_connection_value = self._ctrl.data["system_info"]["hostname"]
+            dev_connection_value = self._ctrl.data["hwinfo"]["hostname"]
 
         if self.entity_description.ha_group.startswith("data__"):
             dev_group = self.entity_description.ha_group[6:]
@@ -174,11 +185,10 @@ class OMVEntity:
             connections={(dev_connection, f"{dev_connection_value}")},
             identifiers={(dev_connection, f"{dev_connection_value}")},
             default_name=f"{self._inst} {dev_group}",
-            default_manufacturer=f"{self._ctrl.data['system_info']['system_manufacturer']}",
-            default_model=f"{self._ctrl.data['system_info']['system_product']}",
-            sw_version=f"{self._ctrl.data['system_info']['version']}",
+            default_manufacturer="OpenMediaVault",
+            sw_version=f"{self._ctrl.data['hwinfo']['version']}",
             configuration_url=f"http://{self._ctrl.config_entry.data[CONF_HOST]}",
-            via_device=(DOMAIN, f"{self._ctrl.data['system_info']['hostname']}"),
+            via_device=(DOMAIN, f"{self._ctrl.data['hwinfo']['hostname']}"),
         )
 
     @property

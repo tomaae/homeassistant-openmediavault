@@ -31,6 +31,7 @@ class OMVBinarySensorEntityDescription(BinarySensorEntityDescription):
     data_uid: str = ""
     data_reference: str = ""
     data_attributes_list: List = field(default_factory=lambda: [])
+    func: str = "OMVBinarySensor"
 
 
 SENSOR_TYPES = {
@@ -94,3 +95,5 @@ SENSOR_TYPES = {
         data_attributes_list=DEVICE_ATTRIBUTES_SERVICE,
     ),
 }
+
+SENSOR_SERVICES = []
