@@ -1,6 +1,4 @@
 """The OpenMediaVault integration."""
-
-from homeassistant.const import CONF_HOST
 from .const import DOMAIN, PLATFORMS
 from .omv_controller import OMVControllerData
 
