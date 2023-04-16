@@ -13,9 +13,11 @@ DEVICE_ATTRIBUTES_FS = [
     "size",
     "available",
     "type",
-    "mountpoint",
+    "devicename",
     "_readonly",
     "_used",
+    "mounted",
+    "propreadonly",
 ]
 
 DEVICE_ATTRIBUTES_DISK = [
@@ -122,7 +124,7 @@ SENSOR_TYPES = {
         ha_group="Filesystem",
         data_path="fs",
         data_attribute="percentage",
-        data_name="mountpoint",
+        data_name="devicename",
         data_uid="",
         data_reference="uuid",
         data_attributes_list=DEVICE_ATTRIBUTES_FS,
