@@ -7,7 +7,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
     SensorEntityDescription,
 )
-from homeassistant.const import PERCENTAGE, TEMP_CELSIUS
+from homeassistant.const import PERCENTAGE, UnitOfTemperature, UnitOfDataRate
 
 DEVICE_ATTRIBUTES_FS = [
     "size",
@@ -133,7 +133,7 @@ SENSOR_TYPES = {
         key="disk",
         name="",
         icon="mdi:harddisk",
-        native_unit_of_measurement=TEMP_CELSIUS,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=None,

@@ -39,13 +39,15 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class OMVSensor(OMVEntity, SensorEntity):
     """Define an OpenMediaVault sensor."""
 
-    @property
-    def state(self) -> Optional[str]:
-        """Return the state"""
-        if self.entity_description.data_attribute:
-            return self._data[self.entity_description.data_attribute]
-        else:
-            return "unknown"
+    def __init__(
+        self,
+        inst,
+        uid: "",
+        omv_controller,
+        entity_description,
+    ):
+        super().__init__(inst, uid, omv_controller, entity_description)
+        self._attr_native_value = self._data[self.entity_description.data_attribute]
 
     @property
     def native_unit_of_measurement(self):
