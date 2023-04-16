@@ -26,21 +26,22 @@ def from_entry(entry, param, default="") -> str:
         for tmp_param in param.split("/"):
             if isinstance(entry, dict) and tmp_param in entry:
                 entry = entry[tmp_param]
+                ret = entry
             else:
-                return default
+                ret = default
+                break
 
-        ret = entry
     elif param in entry:
         ret = entry[param]
     else:
-        return default
+        ret = default
 
     if default != "":
-        if isinstance(ret, str):
+        if isinstance(default, str):
             ret = str(ret)
-        elif isinstance(ret, int):
+        elif isinstance(default, int):
             ret = int(ret)
-        elif isinstance(ret, float):
+        elif isinstance(default, float):
             ret = round(float(ret), 2)
 
     return ret[:255] if isinstance(ret, str) and len(ret) > 255 else ret
