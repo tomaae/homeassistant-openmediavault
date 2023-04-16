@@ -27,5 +27,17 @@
             "501": "Server does not support the functionality.",
             "5001": "OpenMediaVault connection timeout."
         }
+    },
+    "options": {
+        "step": {
+            "basic_options": {
+                "data": {
+                    "scan_interval": "Scan interval",
+                    "smart_disable": "Disable S.M.A.R.T."
+                },
+                "title": "OpenMediaVault options",
+                "description": "Configure integration"
+            }
+        }
     }
 }

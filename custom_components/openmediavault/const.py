@@ -17,6 +17,11 @@ DEFAULT_DEVICE_NAME = "OMV"
 DEFAULT_SSL = False
 DEFAULT_SSL_VERIFY = True
 
+CONF_SCAN_INTERVAL = "scan_interval"
+DEFAULT_SCAN_INTERVAL = 60
+CONF_SMART_DISABLE = "smart_disable"
+DEFAULT_SMART_DISABLE = False
+
 TO_REDACT = {
     "username",
     "password",

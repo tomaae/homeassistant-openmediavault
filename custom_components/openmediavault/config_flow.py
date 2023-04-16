@@ -4,7 +4,11 @@ import voluptuous as vol
 import logging
 
 _LOGGER = logging.getLogger(__name__)
-from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
+from homeassistant.config_entries import (
+    CONN_CLASS_LOCAL_POLL,
+    ConfigFlow,
+    OptionsFlow,
+)
 from homeassistant.const import (
     CONF_HOST,
     CONF_NAME,
@@ -22,6 +26,10 @@ from .const import (
     DEFAULT_SSL_VERIFY,
     DEFAULT_USERNAME,
     DOMAIN,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL,
+    CONF_SMART_DISABLE,
+    DEFAULT_SMART_DISABLE,
 )
 from .omv_api import OpenMediaVaultAPI
 
@@ -48,6 +56,12 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def __init__(self):
         """Initialize OMVConfigFlow."""
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return OMVOptionsFlowHandler(config_entry)
 
     async def async_step_import(self, user_input=None):
         """Occurs when a previous entry setup fails and is re-initiated."""
@@ -113,4 +127,47 @@ class OMVConfigFlow(ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
+        )
+
+
+# ---------------------------
+#   OMVOptionsFlowHandler
+# ---------------------------
+class OMVOptionsFlowHandler(OptionsFlow):
+    """Handle options."""
+
+    def __init__(self, config_entry):
+        """Initialize options flow."""
+        self.config_entry = config_entry
+        self.options = dict(config_entry.options)
+
+    async def async_step_init(self, user_input=None):
+        """Manage the options."""
+        return await self.async_step_basic_options(user_input)
+
+    async def async_step_basic_options(self, user_input=None):
+        """Manage the basic options."""
+        if user_input is not None:
+            self.options.update(user_input)
+            return self.async_create_entry(title="", data=self.options)
+
+        return self.async_show_form(
+            step_id="basic_options",
+            last_step=True,
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(
+                        CONF_SCAN_INTERVAL,
+                        default=self.config_entry.options.get(
+                            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+                        ),
+                    ): int,
+                    vol.Optional(
+                        CONF_SMART_DISABLE,
+                        default=self.config_entry.options.get(
+                            CONF_SMART_DISABLE, DEFAULT_SMART_DISABLE
+                        ),
+                    ): bool,
+                }
+            ),
         )

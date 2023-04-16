@@ -23,6 +23,9 @@ DEVICE_ATTRIBUTES_DISK = [
     "size",
     "israid",
     "isroot",
+]
+
+DEVICE_ATTRIBUTES_DISK_SMART = [
     "devicemodel",
     "serialnumber",
     "firmwareversion",
@@ -134,6 +137,7 @@ SENSOR_TYPES = {
         data_uid="",
         data_reference="devicename",
         data_attributes_list=DEVICE_ATTRIBUTES_DISK,
+        func="OMVDiskSensor",
     ),
 }
 

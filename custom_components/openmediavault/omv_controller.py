@@ -16,7 +16,13 @@ from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL,
+    CONF_SMART_DISABLE,
+    DEFAULT_SMART_DISABLE,
+)
 from .apiparser import parse_api
 from .omv_api import OpenMediaVaultAPI
 
@@ -79,11 +85,30 @@ class OMVControllerData(object):
     # ---------------------------
     async def async_init(self):
         self._force_update_callback = async_track_time_interval(
-            self.hass, self.force_update, timedelta(seconds=60)
+            self.hass, self.force_update, self.option_scan_interval
         )
         self._force_hwinfo_update_callback = async_track_time_interval(
             self.hass, self.force_hwinfo_update, timedelta(seconds=3600)
         )
+
+    # ---------------------------
+    #   option_scan_interval
+    # ---------------------------
+    @property
+    def option_scan_interval(self):
+        """Config entry option scan interval."""
+        scan_interval = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        )
+        return timedelta(seconds=scan_interval)
+
+    # ---------------------------
+    #   option_smart_disable
+    # ---------------------------
+    @property
+    def option_smart_disable(self):
+        """Config entry option smart disable."""
+        return self.config_entry.options.get(CONF_SMART_DISABLE, DEFAULT_SMART_DISABLE)
 
     # ---------------------------
     #   signal_update
@@ -161,12 +186,14 @@ class OMVControllerData(object):
         await self.hass.async_add_executor_job(self.get_hwinfo)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_fs)
-        if self.api.connected():
+
+        if not self.option_smart_disable and self.api.connected():
             await self.hass.async_add_executor_job(self.get_smart)
+
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_service)
 
-        async_dispatcher_send(self.hass, self.signal_update)
+        # async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
 
     # ---------------------------
