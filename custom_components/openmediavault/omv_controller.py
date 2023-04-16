@@ -294,7 +294,7 @@ class OMVControllerData(object):
                 {"name": "Reallocated_Sector_Ct", "default": "unknown"},
                 {"name": "Seek_Error_Rate", "default": "unknown"},
                 {"name": "Load_Cycle_Count", "default": "unknown"},
-                {"name": "Temperature_Celsius", "default": "unknown"},
+                {"name": "Temperature_Celsius", "default": 0},
                 {"name": "UDMA_CRC_Error_Count", "default": "unknown"},
                 {"name": "Multi_Zone_Error_Rate", "default": "unknown"},
             ],
