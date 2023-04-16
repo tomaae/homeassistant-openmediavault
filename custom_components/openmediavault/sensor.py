@@ -71,7 +71,6 @@ class OMVDiskSensor(OMVSensor):
     def extra_state_attributes(self) -> Mapping[str, Any]:
         """Return the state attributes."""
         attributes = super().extra_state_attributes
-        print(self._data)
 
         if not self._ctrl.option_smart_disable:
             for variable in DEVICE_ATTRIBUTES_DISK_SMART:
