@@ -424,6 +424,11 @@ class OMVControllerData(object):
         )
 
         for uid in self.data["fs"]:
+            tmp = self.data["fs"][uid]["devicename"]
+            self.data["fs"][uid]["devicename"] = tmp[
+                tmp.startswith("mapper/") and len("mapper/") :
+            ]
+
             self.data["fs"][uid]["size"] = round(
                 int(self.data["fs"][uid]["size"]) / 1073741824, 1
             )
