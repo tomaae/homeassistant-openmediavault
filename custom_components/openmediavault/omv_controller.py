@@ -63,6 +63,7 @@ class OMVControllerData(object):
             "disk": {},
             "fs": {},
             "service": {},
+            "network": {},
         }
 
         self.listeners = []
@@ -191,9 +192,11 @@ class OMVControllerData(object):
             await self.hass.async_add_executor_job(self.get_smart)
 
         if self.api.connected():
+            await self.hass.async_add_executor_job(self.get_network)
+
+        if self.api.connected():
             await self.hass.async_add_executor_job(self.get_service)
 
-        # async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
 
     # ---------------------------
@@ -471,3 +474,60 @@ class OMVControllerData(object):
                 {"name": "installed", "type": "bool", "default": False},
             ],
         )
+
+    # ---------------------------
+    #   get_network
+    # ---------------------------
+    def get_network(self):
+        """Get OMV plugin status"""
+        self.data["network"] = parse_api(
+            data=self.data["network"],
+            source=self.api.query("Network", "enumerateDevices"),
+            key="uuid",
+            vals=[
+                {"name": "uuid"},
+                {"name": "devicename", "default": "unknown"},
+                {"name": "type", "default": "unknown"},
+                {"name": "method", "default": "unknown"},
+                {"name": "address", "default": "unknown"},
+                {"name": "netmask", "default": "unknown"},
+                {"name": "gateway", "default": "unknown"},
+                {"name": "mtu", "default": 0},
+                {"name": "link", "type": "bool", "default": False},
+                {"name": "wol", "type": "bool", "default": False},
+                {"name": "rx-current", "source": "stats/rx_packets", "default": 0.0},
+                {"name": "tx-current", "source": "stats/tx_packets", "default": 0.0},
+            ],
+            ensure_vals=[
+                {"name": "rx-previous", "default": 0.0},
+                {"name": "tx-previous", "default": 0.0},
+                {"name": "rx", "default": 0.0},
+                {"name": "tx", "default": 0.0},
+            ],
+            skip=[
+                {"name": "type", "value": "loopback"},
+            ],
+        )
+
+        for uid, vals in self.data["network"].items():
+            current_tx = vals["tx-current"]
+            previous_tx = vals["tx-previous"]
+            if not previous_tx:
+                previous_tx = current_tx
+
+            delta_tx = max(0, current_tx - previous_tx) * 8
+            self.data["network"][uid]["tx"] = round(
+                delta_tx / self.option_scan_interval.seconds, 2
+            )
+            self.data["network"][uid]["tx-previous"] = current_tx
+
+            current_rx = vals["rx-current"]
+            previous_rx = vals["rx-previous"]
+            if not previous_rx:
+                previous_rx = current_rx
+
+            delta_rx = max(0, current_rx - previous_rx) * 8
+            self.data["network"][uid]["rx"] = round(
+                delta_rx / self.option_scan_interval.seconds, 2
+            )
+            self.data["network"][uid]["rx-previous"] = current_rx

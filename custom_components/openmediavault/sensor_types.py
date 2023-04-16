@@ -50,6 +50,17 @@ DEVICE_ATTRIBUTES_DISK_SMART = [
     "Multi_Zone_Error_Rate",
 ]
 
+DEVICE_ATTRIBUTES_NETWORK = [
+    "type",
+    "method",
+    "address",
+    "netmask",
+    "gateway",
+    "mtu",
+    "link",
+    "wol",
+]
+
 
 @dataclass
 class OMVSensorEntityDescription(SensorEntityDescription):
@@ -145,6 +156,38 @@ SENSOR_TYPES = {
         data_reference="devicename",
         data_attributes_list=DEVICE_ATTRIBUTES_DISK,
         func="OMVDiskSensor",
+    ),
+    "network_tx": OMVSensorEntityDescription(
+        key="network_tx",
+        name="TX",
+        icon="mdi:upload-network-outline",
+        native_unit_of_measurement=UnitOfDataRate.BITS_PER_SECOND,
+        device_class=SensorDeviceClass.DATA_RATE,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=None,
+        ha_group="System",
+        data_path="network",
+        data_attribute="tx",
+        data_name="devicename",
+        data_uid="",
+        data_reference="uuid",
+        data_attributes_list=DEVICE_ATTRIBUTES_NETWORK,
+    ),
+    "network_rx": OMVSensorEntityDescription(
+        key="network_rx",
+        name="RX",
+        icon="mdi:download-network-outline",
+        native_unit_of_measurement=UnitOfDataRate.BITS_PER_SECOND,
+        device_class=SensorDeviceClass.DATA_RATE,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=None,
+        ha_group="System",
+        data_path="network",
+        data_attribute="rx",
+        data_name="devicename",
+        data_uid="",
+        data_reference="uuid",
+        data_attributes_list=DEVICE_ATTRIBUTES_NETWORK,
     ),
 }
 
