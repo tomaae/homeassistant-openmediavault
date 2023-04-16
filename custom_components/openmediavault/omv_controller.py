@@ -33,16 +33,6 @@ def utc_from_timestamp(timestamp: float) -> datetime:
     return pytz.utc.localize(datetime.utcfromtimestamp(timestamp))
 
 
-def as_local(dattim: datetime) -> datetime:
-    """Convert a UTC datetime object to local time zone."""
-    if dattim.tzinfo == DEFAULT_TIME_ZONE:
-        return dattim
-    if dattim.tzinfo is None:
-        dattim = pytz.utc.localize(dattim)
-
-    return dattim.astimezone(DEFAULT_TIME_ZONE)
-
-
 # ---------------------------
 #   OMVControllerData
 # ---------------------------
@@ -228,7 +218,7 @@ class OMVControllerData(object):
 
         tmp_uptime = 0
         if int(self.data["hwinfo"]["version"].split(".")[0]) > 5:
-            tmp = self.data["hwinfo"]["uptime"]
+            tmp = float(self.data["hwinfo"]["uptime"])
             pos = abs(int(tmp))
             day = pos / (3600 * 24)
             rem = pos % (3600 * 24)
@@ -254,9 +244,7 @@ class OMVControllerData(object):
         tmp_uptime += int(tmp[6])  # seconds
         now = datetime.now().replace(microsecond=0)
         uptime_tm = datetime.timestamp(now - timedelta(seconds=tmp_uptime))
-        self.data["hwinfo"]["uptimeEpoch"] = str(
-            as_local(utc_from_timestamp(uptime_tm)).isoformat()
-        )
+        self.data["hwinfo"]["uptimeEpoch"] = utc_from_timestamp(uptime_tm)
 
         self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
         mem = (
