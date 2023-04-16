@@ -282,8 +282,13 @@ class OMVControllerData(object):
                 {"name": "devicename"},
                 {"name": "canonicaldevicefile"},
                 {"name": "size", "default": "unknown"},
+                {"name": "vendor", "default": "unknown"},
+                {"name": "model", "default": "unknown"},
+                {"name": "description", "default": "unknown"},
+                {"name": "serialnumber", "default": "unknown"},
                 {"name": "israid", "type": "bool", "default": False},
                 {"name": "isroot", "type": "bool", "default": False},
+                {"name": "isreadonly", "type": "bool", "default": False},
             ],
             ensure_vals=[
                 {"name": "devicemodel", "default": "unknown"},

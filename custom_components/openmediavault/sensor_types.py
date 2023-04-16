@@ -21,8 +21,13 @@ DEVICE_ATTRIBUTES_FS = [
 DEVICE_ATTRIBUTES_DISK = [
     "canonicaldevicefile",
     "size",
+    "vendor",
+    "model",
+    "description",
+    "serialnumber",
     "israid",
     "isroot",
+    "isreadonly",
 ]
 
 DEVICE_ATTRIBUTES_DISK_SMART = [
