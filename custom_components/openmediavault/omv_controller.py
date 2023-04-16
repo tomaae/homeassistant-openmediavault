@@ -186,9 +186,12 @@ class OMVControllerData(object):
                 {"name": "uptime", "default": "0 days 0 hours 0 minutes 0 seconds"},
                 {"name": "configDirty", "type": "bool", "default": False},
                 {"name": "rebootRequired", "type": "bool", "default": False},
+                {"name": "availablePkgUpdates", "default": 0},
+            ],
+            ensure_vals=[
+                {"name": "memUsage", "default": 0},
                 {"name": "pkgUpdatesAvailable", "type": "bool", "default": False},
             ],
-            ensure_vals=[{"name": "memUsage", "default": 0}],
         )
 
         if not self.api.connected():
@@ -234,6 +237,10 @@ class OMVControllerData(object):
             else 0
         )
         self.data["hwinfo"]["memUsage"] = round(mem, 1)
+
+        self.data["hwinfo"]["pkgUpdatesAvailable"] = (
+            self.data["hwinfo"]["availablePkgUpdates"] > 0
+        )
 
     # ---------------------------
     #   get_disk
