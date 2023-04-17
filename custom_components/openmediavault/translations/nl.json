@@ -1,0 +1,43 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Stel OpenMediaVault in",
+                "description": "Stel OpenMediaVault-integratie in.",
+                "data": {
+                    "name": "Naam van de integratie",
+                    "host": "Host",
+                    "username": "Gebruikersnaam",
+                    "password": "Wachtwoord",
+                    "ssl": "Gebruik SSL",
+                    "verify_ssl": "SSL-certificaat verifiëren"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "De naam bestaat al.",
+            "cannot_connect": "Kan geen verbinding maken met OpenMediaVault.",
+            "wrong_login": "Ongeldige gebruikersnaam of wachtwoord.",
+            "ssl_verify_failed": "Verificatie van SSL-certificaat mislukt.",
+            "no_respose": "Geen reactie van host.",
+            "400": "Foute aanvraag.",
+            "401": "Geen autorisatie voor dit eindpunt.",
+            "404": "API niet gevonden op deze host.",
+            "500": "Interne fout.",
+            "501": "De server ondersteunt de functionaliteit niet.",
+            "5001": "OpenMediaVault verbinding time-out."
+        }
+    },
+    "options": {
+        "step": {
+            "basic_options": {
+                "data": {
+                    "scan_interval": "Scan interval",
+                    "smart_disable": "Disable S.M.A.R.T."
+                },
+                "title": "OpenMediaVault options",
+                "description": "Integratie configureren"
+            }
+        }
+    }
+}
