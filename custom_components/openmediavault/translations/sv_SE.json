@@ -1,0 +1,43 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Konfigurera OpenMediaVault",
+                "description": "Konfigurera OpenMediaVault-integration.",
+                "data": {
+                    "name": "Namnet på integrationen",
+                    "host": "Värd",
+                    "username": "Användarnamn",
+                    "password": "Lösenord",
+                    "ssl": "Använd SSL",
+                    "verify_ssl": "Verifiera SSL-certifikat"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Namnet finns redan.",
+            "cannot_connect": "Kan inte ansluta till OpenMediaVault.",
+            "wrong_login": "Felaktigt användarnamn eller lösenord.",
+            "ssl_verify_failed": "Verifieringen av SSL-certifikatet misslyckades.",
+            "no_respose": "Inget svar från värden.",
+            "400": "Dålig förfrågan.",
+            "401": "Ingen auktorisering för den här ändpunkten.",
+            "404": "API hittades inte på denna värd.",
+            "500": "Internt fel.",
+            "501": "Servern stöder inte funktionen.",
+            "5001": "Timeout för OpenMediaVault-anslutningen."
+        }
+    },
+    "options": {
+        "step": {
+            "basic_options": {
+                "data": {
+                    "scan_interval": "Scan interval",
+                    "smart_disable": "Disable S.M.A.R.T."
+                },
+                "title": "OpenMediaVault options",
+                "description": "Configure integration"
+            }
+        }
+    }
+}
