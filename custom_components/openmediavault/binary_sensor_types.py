@@ -10,10 +10,10 @@ from homeassistant.components.binary_sensor import (
 from .const import DOMAIN
 
 
-DEVICE_ATTRIBUTES_SERVICE = {
+DEVICE_ATTRIBUTES_SERVICE = [
     "name",
     "enabled",
-}
+]
 
 
 @dataclass
