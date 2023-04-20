@@ -3,6 +3,7 @@
 import json
 import logging
 from os import path
+from typing import Any
 from pickle import dump as pickle_dump
 from pickle import load as pickle_load
 from threading import Lock
@@ -237,16 +238,16 @@ class OpenMediaVaultAPI(object):
     # ---------------------------
     #   query
     # ---------------------------
-    def query(self, service, method, params=None, options=None) -> Optional(list):
+    def query(
+        self,
+        service: str,
+        method: str,
+        params: dict[str, Any] | None = {},
+        options: dict[str, Any] | None = {"updatelastaccess": True},
+    ) -> Optional(list):
         """Retrieve data from OMV."""
         if not self.connection_check():
             return None
-
-        if not params:
-            params = {}
-
-        if not options:
-            options = {"updatelastaccess": True}
 
         self.lock.acquire()
         error = False
