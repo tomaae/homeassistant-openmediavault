@@ -151,18 +151,6 @@ class OMVControllerData(object):
             await self.hass.async_add_executor_job(self.get_plugin)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_disk)
-        if (
-            self.api.connected()
-            and "openmediavault-kvm" in self.data["plugin"]
-            and self.data["plugin"]["openmediavault-kvm"]["installed"]
-        ):
-            await self.hass.async_add_executor_job(self.get_kvm)
-        if (
-            self.api.connected()
-            and "openmediavault-compose" in self.data["plugin"]
-            and self.data["plugin"]["openmediavault-compose"]["installed"]
-        ):
-            await self.hass.async_add_executor_job(self.get_compose)
 
         self.lock.release()
 
@@ -199,6 +187,19 @@ class OMVControllerData(object):
 
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_service)
+
+        if (
+            self.api.connected()
+            and "openmediavault-kvm" in self.data["plugin"]
+            and self.data["plugin"]["openmediavault-kvm"]["installed"]
+        ):
+            await self.hass.async_add_executor_job(self.get_kvm)
+        if (
+            self.api.connected()
+            and "openmediavault-compose" in self.data["plugin"]
+            and self.data["plugin"]["openmediavault-compose"]["installed"]
+        ):
+            await self.hass.async_add_executor_job(self.get_compose)
 
         self.lock.release()
 
