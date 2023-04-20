@@ -14,3 +14,35 @@ system_shutdown:
     entity:
       integration: openmediavault
       domain: sensor
+
+kvm_start:
+  name: Start KVM Virtual Machine
+  description: Start KVM Virtual Machine
+  target:
+    entity:
+      integration: openmediavault
+      domain: sensor
+
+kvm_stop:
+  name: Stop KVM Virtual Machine
+  description: Stop KVM Virtual Machine
+  target:
+    entity:
+      integration: openmediavault
+      domain: sensor
+
+kvm_restart:
+  name: Restart KVM Virtual Machine
+  description: Restart KVM Virtual Machine
+  target:
+    entity:
+      integration: openmediavault
+      domain: sensor
+
+kvm_snapshot:
+  name: Create snapshot of KVM Virtual Machine
+  description: Create snapshot of KVM Virtual Machine
+  target:
+    entity:
+      integration: openmediavault
+      domain: sensor

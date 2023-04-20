@@ -53,6 +53,7 @@ class OMVControllerData(object):
             "fs": {},
             "service": {},
             "network": {},
+            "kvm": {},
         }
 
         self.listeners = []
@@ -149,6 +150,12 @@ class OMVControllerData(object):
             await self.hass.async_add_executor_job(self.get_plugin)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_disk)
+        if (
+            self.api.connected()
+            and "openmediavault-kvm" in self.data["plugin"]
+            and self.data["plugin"]["openmediavault-kvm"]["installed"]
+        ):
+            await self.hass.async_add_executor_job(self.get_kvm)
 
         self.lock.release()
 
@@ -518,3 +525,31 @@ class OMVControllerData(object):
                 delta_rx / self.option_scan_interval.seconds, 2
             )
             self.data["network"][uid]["rx-previous"] = current_rx
+
+    # ---------------------------
+    #   get_kvm
+    # ---------------------------
+    def get_kvm(self):
+        """Get OMV KVM"""
+        tmp = self.api.query("Kvm", "getVmList", {"start": 0, "limit": 999})
+        if "data" not in tmp:
+            return
+
+        self.data["kvm"] = parse_api(
+            data={},
+            source=tmp["data"],
+            key="vmname",
+            vals=[
+                {"name": "vmname"},
+                {"name": "type", "source": "virttype", "default": "unknown"},
+                {"name": "memory", "source": "mem", "default": "unknown"},
+                {"name": "cpu", "default": "unknown"},
+                {"name": "state", "default": "unknown"},
+                {"name": "architecture", "source": "arch", "default": "unknown"},
+                {"name": "autostart", "default": "unknown"},
+                {"name": "vncexists", "type": "bool", "default": False},
+                {"name": "spiceexists", "type": "bool", "default": False},
+                {"name": "vncport", "default": "unknown"},
+                {"name": "snapshots", "source": "snaps", "default": "unknown"},
+            ],
+        )

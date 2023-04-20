@@ -14,6 +14,14 @@ from .const import (
     SCHEMA_SERVICE_SYSTEM_SHUTDOWN,
     SERVICE_SYSTEM_REBOOT,
     SERVICE_SYSTEM_SHUTDOWN,
+    SERVICE_KVM_START,
+    SCHEMA_SERVICE_KVM_START,
+    SERVICE_KVM_STOP,
+    SCHEMA_SERVICE_KVM_STOP,
+    SERVICE_KVM_RESTART,
+    SCHEMA_SERVICE_KVM_RESTART,
+    SERVICE_KVM_SNAPSHOT,
+    SCHEMA_SERVICE_KVM_SNAPSHOT,
 )
 
 DEVICE_ATTRIBUTES_FS = [
@@ -66,6 +74,18 @@ DEVICE_ATTRIBUTES_NETWORK = [
     "mtu",
     "link",
     "wol",
+]
+
+DEVICE_ATTRIBUTES_KVM = [
+    "type",
+    "memory",
+    "cpu",
+    "architecture",
+    "autostart",
+    "vncexists",
+    "spiceexists",
+    "vncport",
+    "snapshots",
 ]
 
 
@@ -197,9 +217,27 @@ SENSOR_TYPES = {
         data_reference="uuid",
         data_attributes_list=DEVICE_ATTRIBUTES_NETWORK,
     ),
+    "kvm": OMVSensorEntityDescription(
+        key="kvm",
+        name="",
+        icon="mdi:server",
+        entity_category=None,
+        ha_group="KVM",
+        data_path="kvm",
+        data_attribute="state",
+        data_name="vmname",
+        data_uid="",
+        data_reference="vmname",
+        data_attributes_list=DEVICE_ATTRIBUTES_KVM,
+        func="OMVKVMSensor",
+    ),
 }
 
 SENSOR_SERVICES = [
     [SERVICE_SYSTEM_REBOOT, SCHEMA_SERVICE_SYSTEM_REBOOT, "restart"],
     [SERVICE_SYSTEM_SHUTDOWN, SCHEMA_SERVICE_SYSTEM_SHUTDOWN, "stop"],
+    [SERVICE_KVM_START, SCHEMA_SERVICE_KVM_START, "start"],
+    [SERVICE_KVM_STOP, SCHEMA_SERVICE_KVM_STOP, "stop"],
+    [SERVICE_KVM_RESTART, SCHEMA_SERVICE_KVM_RESTART, "restart"],
+    [SERVICE_KVM_SNAPSHOT, SCHEMA_SERVICE_KVM_SNAPSHOT, "snapshot"],
 ]

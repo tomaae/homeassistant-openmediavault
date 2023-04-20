@@ -23,6 +23,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         "OMVSensor": OMVSensor,
         "OMVDiskSensor": OMVDiskSensor,
         "OMVUptimeSensor": OMVUptimeSensor,
+        "OMVKVMSensor": OMVKVMSensor,
     }
     await model_async_setup_entry(
         hass,
@@ -105,4 +106,107 @@ class OMVUptimeSensor(OMVSensor):
             "System",
             "shutdown",
             {"delay": 0},
+        )
+
+
+# ---------------------------
+#   OMVKVMSensor
+# ---------------------------
+class OMVKVMSensor(OMVSensor):
+    """Define an OpenMediaVault VM sensor."""
+
+    async def start(self) -> None:
+        """Shutdown OpenMediaVault systen."""
+        tmp = await self.hass.async_add_executor_job(
+            self._ctrl.api.query, "Kvm", "getVmList", {"start": 0, "limit": 999}
+        )
+
+        state = ""
+        if "data" in tmp:
+            for tmp_i in tmp["data"]:
+                if tmp_i["vmname"] == self._data["vmname"]:
+                    state = tmp_i["state"]
+                    break
+
+        if state != "shutoff":
+            _LOGGER.warning("VM %s is not powered off", self._data["vmname"])
+            return
+
+        await self.hass.async_add_executor_job(
+            self._ctrl.api.query,
+            "Kvm",
+            "doCommand",
+            {
+                "command": "poweron",
+                "virttype": f"{self._data['type']}",
+                "name": f"{self._data['vmname']}",
+            },
+        )
+
+    async def stop(self) -> None:
+        """Shutdown OpenMediaVault systen."""
+        tmp = await self.hass.async_add_executor_job(
+            self._ctrl.api.query, "Kvm", "getVmList", {"start": 0, "limit": 999}
+        )
+
+        state = ""
+        if "data" in tmp:
+            for tmp_i in tmp["data"]:
+                if tmp_i["vmname"] == self._data["vmname"]:
+                    state = tmp_i["state"]
+                    break
+
+        if state != "running":
+            _LOGGER.warning("VM %s is not running", self._data["vmname"])
+            return
+
+        await self.hass.async_add_executor_job(
+            self._ctrl.api.query,
+            "Kvm",
+            "doCommand",
+            {
+                "command": "poweroff",
+                "virttype": f"{self._data['type']}",
+                "name": f"{self._data['vmname']}",
+            },
+        )
+
+    async def restart(self) -> None:
+        """Shutdown OpenMediaVault systen."""
+        tmp = await self.hass.async_add_executor_job(
+            self._ctrl.api.query, "Kvm", "getVmList", {"start": 0, "limit": 999}
+        )
+
+        state = ""
+        if "data" in tmp:
+            for tmp_i in tmp["data"]:
+                if tmp_i["vmname"] == self._data["vmname"]:
+                    state = tmp_i["state"]
+                    break
+
+        if state != "running":
+            _LOGGER.warning("VM %s is not running", self._data["vmname"])
+            return
+
+        await self.hass.async_add_executor_job(
+            self._ctrl.api.query,
+            "Kvm",
+            "doCommand",
+            {
+                "command": "reboot",
+                "virttype": f"{self._data['type']}",
+                "name": f"{self._data['vmname']}",
+            },
+        )
+
+    async def snapshot(self) -> None:
+        """Shutdown OpenMediaVault systen."""
+        await self.hass.async_add_executor_job(
+            self._ctrl.api.query,
+            "Kvm",
+            "addSnapshot",
+            {
+                "virttype": f"{self._data['type']}",
+                "vmname": f"{self._data['vmname']}",
+            },
         )
