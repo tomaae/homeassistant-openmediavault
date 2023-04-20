@@ -1,1 +1,16 @@
 ---
+system_reboot:
+  name: Reboot OpenMediaVault
+  description: Reboot OpenMediaVault System (Target Uptime Sensor)
+  target:
+    entity:
+      integration: openmediavault
+      domain: sensor
+
+system_shutdown:
+  name: Shutdown OpenMediaVault
+  description: Shutdown OpenMediaVault System (Target Uptime Sensor)
+  target:
+    entity:
+      integration: openmediavault
+      domain: sensor

@@ -22,6 +22,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     dispatcher = {
         "OMVSensor": OMVSensor,
         "OMVDiskSensor": OMVDiskSensor,
+        "OMVUptimeSensor": OMVUptimeSensor,
     }
     await model_async_setup_entry(
         hass,
@@ -80,3 +81,28 @@ class OMVDiskSensor(OMVSensor):
                     attributes[format_attribute(variable)] = self._data[variable]
 
         return attributes
+
+
+# ---------------------------
+#   OMVUptimeSensor
+# ---------------------------
+class OMVUptimeSensor(OMVSensor):
+    """Define an OpenMediaVault Uptime sensor."""
+
+    async def restart(self) -> None:
+        """Restart OpenMediaVault systen."""
+        await self.hass.async_add_executor_job(
+            self._ctrl.api.query,
+            "System",
+            "reboot",
+            {"delay": 0},
+        )
+
+    async def stop(self) -> None:
+        """Shutdown OpenMediaVault systen."""
+        await self.hass.async_add_executor_job(
+            self._ctrl.api.query,
+            "System",
+            "shutdown",
+            {"delay": 0},
+        )

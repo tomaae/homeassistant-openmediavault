@@ -9,6 +9,13 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import PERCENTAGE, UnitOfTemperature, UnitOfDataRate
 
+from .const import (
+    SCHEMA_SERVICE_SYSTEM_REBOOT,
+    SCHEMA_SERVICE_SYSTEM_SHUTDOWN,
+    SERVICE_SYSTEM_REBOOT,
+    SERVICE_SYSTEM_SHUTDOWN,
+)
+
 DEVICE_ATTRIBUTES_FS = [
     "size",
     "available",
@@ -123,6 +130,7 @@ SENSOR_TYPES = {
         data_name="",
         data_uid="",
         data_reference="",
+        func="OMVUptimeSensor",
     ),
     "fs": OMVSensorEntityDescription(
         key="fs",
@@ -191,4 +199,7 @@ SENSOR_TYPES = {
     ),
 }
 
-SENSOR_SERVICES = []
+SENSOR_SERVICES = [
+    [SERVICE_SYSTEM_REBOOT, SCHEMA_SERVICE_SYSTEM_REBOOT, "restart"],
+    [SERVICE_SYSTEM_SHUTDOWN, SCHEMA_SERVICE_SYSTEM_SHUTDOWN, "stop"],
+]

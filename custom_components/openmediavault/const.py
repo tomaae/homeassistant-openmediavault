@@ -26,3 +26,10 @@ TO_REDACT = {
     "username",
     "password",
 }
+
+
+SERVICE_SYSTEM_REBOOT = "system_reboot"
+SCHEMA_SERVICE_SYSTEM_REBOOT = {}
+
+SERVICE_SYSTEM_SHUTDOWN = "system_shutdown"
+SCHEMA_SERVICE_SYSTEM_SHUTDOWN = {}
