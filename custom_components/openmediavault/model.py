@@ -207,20 +207,20 @@ class OMVEntity:
 
     async def start(self):
         """Dummy run function"""
-        _LOGGER.error("Start functionality does not exist for %s", self.entity_id)
+        raise NotImplementedError()
 
     async def stop(self):
         """Dummy stop function"""
-        _LOGGER.error("Stop functionality does not exist for %s", self.entity_id)
+        raise NotImplementedError()
 
     async def restart(self):
         """Dummy restart function"""
-        _LOGGER.error("Restart functionality does not exist for %s", self.entity_id)
+        raise NotImplementedError()
 
     async def reload(self):
         """Dummy reload function"""
-        _LOGGER.error("Reload functionality does not exist for %s", self.entity_id)
+        raise NotImplementedError()
 
     async def snapshot(self):
         """Dummy snapshot function"""
-        _LOGGER.error("Snapshot functionality does not exist for %s", self.entity_id)
+        raise NotImplementedError()
