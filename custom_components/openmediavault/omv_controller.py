@@ -54,6 +54,7 @@ class OMVControllerData(object):
             "service": {},
             "network": {},
             "kvm": {},
+            "compose": {},
         }
 
         self.listeners = []
@@ -156,6 +157,12 @@ class OMVControllerData(object):
             and self.data["plugin"]["openmediavault-kvm"]["installed"]
         ):
             await self.hass.async_add_executor_job(self.get_kvm)
+        if (
+            self.api.connected()
+            and "openmediavault-compose" in self.data["plugin"]
+            and self.data["plugin"]["openmediavault-compose"]["installed"]
+        ):
+            await self.hass.async_add_executor_job(self.get_compose)
 
         self.lock.release()
 
@@ -551,5 +558,28 @@ class OMVControllerData(object):
                 {"name": "spiceexists", "type": "bool", "default": False},
                 {"name": "vncport", "default": "unknown"},
                 {"name": "snapshots", "source": "snaps", "default": "unknown"},
+            ],
+        )
+
+    # ---------------------------
+    #   get_compose
+    # ---------------------------
+    def get_compose(self):
+        """Get OMV compose"""
+        tmp = self.api.query("compose", "getContainerList", {"start": 0, "limit": 999})
+        if "data" not in tmp:
+            return
+
+        self.data["compose"] = parse_api(
+            data={},
+            source=tmp["data"],
+            key="name",
+            vals=[
+                {"name": "name"},
+                {"name": "image", "default": "unknown"},
+                {"name": "project", "default": "unknown"},
+                {"name": "service", "default": "unknown"},
+                {"name": "created", "default": "unknown"},
+                {"name": "state", "default": "unknown"},
             ],
         )

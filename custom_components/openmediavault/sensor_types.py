@@ -88,6 +88,13 @@ DEVICE_ATTRIBUTES_KVM = [
     "snapshots",
 ]
 
+DEVICE_ATTRIBUTES_COMPOSE = [
+    "image",
+    "project",
+    "service",
+    "created",
+]
+
 
 @dataclass
 class OMVSensorEntityDescription(SensorEntityDescription):
@@ -230,6 +237,19 @@ SENSOR_TYPES = {
         data_reference="vmname",
         data_attributes_list=DEVICE_ATTRIBUTES_KVM,
         func="OMVKVMSensor",
+    ),
+    "compose": OMVSensorEntityDescription(
+        key="compose",
+        name="",
+        icon="mdi:text-box-multiple-outline",
+        entity_category=None,
+        ha_group="Compose",
+        data_path="compose",
+        data_attribute="state",
+        data_name="name",
+        data_uid="",
+        data_reference="name",
+        data_attributes_list=DEVICE_ATTRIBUTES_COMPOSE,
     ),
 }
 
