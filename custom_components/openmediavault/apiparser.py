@@ -40,8 +40,16 @@ def from_entry(entry, param, default="") -> str:
         if isinstance(default, str):
             ret = str(ret)
         elif isinstance(default, int):
+            if " " in ret:
+                ret_tmp = ret.split(" ")
+                ret = ret_tmp[0]
+
             ret = int(ret)
         elif isinstance(default, float):
+            if " " in ret:
+                ret_tmp = ret.split(" ")
+                ret = ret_tmp[0]
+
             ret = round(float(ret), 2)
 
     return ret[:255] if isinstance(ret, str) and len(ret) > 255 else ret
