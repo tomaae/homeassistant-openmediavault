@@ -383,6 +383,7 @@ class OMVControllerData(object):
                 "Seek_Error_Rate",
                 "Load_Cycle_Count",
                 "Temperature_Celsius",
+                "temperature",
                 "UDMA_CRC_Error_Count",
                 "Multi_Zone_Error_Rate",
             ]
@@ -396,6 +397,9 @@ class OMVControllerData(object):
                         tmp_data[tmp_val]["rawvalue"] = tmp_data[tmp_val][
                             "rawvalue"
                         ].split(" ")[0]
+
+                    if tmp_val == "temperature":
+                        tmp_val = "Temperature_Celsius"
 
                     self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
 
