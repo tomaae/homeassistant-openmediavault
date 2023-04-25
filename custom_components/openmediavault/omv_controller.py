@@ -284,6 +284,7 @@ class OMVControllerData(object):
     #   get_cputemp
     # ---------------------------
     def get_cputemp(self):
+        return
         # tmp_data = parse_api(
         #     data={},
         #     source=self.api.query("CpuTemp", "get"),
@@ -297,7 +298,7 @@ class OMVControllerData(object):
         #         {"name": "smartsupportis", "type": "bool", "default": False},
         #     ],
         # )
-        print("CpuTemp:", self.api.query("CpuTemp", "get"))
+        # print("CpuTemp:", self.api.query("CpuTemp", "get"))
 
     # ---------------------------
     #   get_disk
