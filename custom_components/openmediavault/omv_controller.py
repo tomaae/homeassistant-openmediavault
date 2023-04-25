@@ -200,6 +200,12 @@ class OMVControllerData(object):
             and self.data["plugin"]["openmediavault-compose"]["installed"]
         ):
             await self.hass.async_add_executor_job(self.get_compose)
+        if (
+            self.api.connected()
+            and "openmediavault-cputemp" in self.data["plugin"]
+            and self.data["plugin"]["openmediavault-cputemp"]["installed"]
+        ):
+            await self.hass.async_add_executor_job(self.get_cputemp)
 
         self.lock.release()
 
@@ -273,6 +279,25 @@ class OMVControllerData(object):
         self.data["hwinfo"]["pkgUpdatesAvailable"] = (
             self.data["hwinfo"]["availablePkgUpdates"] > 0
         )
+
+    # ---------------------------
+    #   get_cputemp
+    # ---------------------------
+    def get_cputemp(self):
+        # tmp_data = parse_api(
+        #     data={},
+        #     source=self.api.query("CpuTemp", "get"),
+        #     vals=[
+        #         {"name": "devicemodel", "default": "unknown"},
+        #         {"name": "serialnumber", "default": "unknown"},
+        #         {"name": "firmwareversion", "default": "unknown"},
+        #         {"name": "sectorsize", "default": "unknown"},
+        #         {"name": "rotationrate", "default": "unknown"},
+        #         {"name": "writecacheis", "type": "bool", "default": False},
+        #         {"name": "smartsupportis", "type": "bool", "default": False},
+        #     ],
+        # )
+        print("CpuTemp:", self.api.query("CpuTemp", "get"))
 
     # ---------------------------
     #   get_disk
