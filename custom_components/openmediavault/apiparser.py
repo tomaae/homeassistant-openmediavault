@@ -40,13 +40,13 @@ def from_entry(entry, param, default="") -> str:
         if isinstance(default, str):
             ret = str(ret)
         elif isinstance(default, int):
-            if isinstance(default, str) and " " in ret:
+            if isinstance(ret, str) and " " in ret:
                 ret_tmp = ret.split(" ")
                 ret = ret_tmp[0]
 
             ret = int(ret)
         elif isinstance(default, float):
-            if isinstance(default, str) and " " in ret:
+            if isinstance(ret, str) and " " in ret:
                 ret_tmp = ret.split(" ")
                 ret = ret_tmp[0]
 
