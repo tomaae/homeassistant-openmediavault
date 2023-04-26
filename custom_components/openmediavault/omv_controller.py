@@ -399,9 +399,11 @@ class OMVControllerData(object):
                         ].split(" ")[0]
 
                     if tmp_val == "temperature":
-                        tmp_val = "Temperature_Celsius"
-
-                    self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
+                        self.data["disk"][uid]["Temperature_Celsius"] = tmp_data[
+                            tmp_val
+                        ]["rawvalue"]
+                    else:
+                        self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
 
     # ---------------------------
     #   get_fs
