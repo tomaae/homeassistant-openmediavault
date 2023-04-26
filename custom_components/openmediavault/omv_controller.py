@@ -217,6 +217,13 @@ class OMVControllerData(object):
                 {"name": "cpuUsage", "default": 0.0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
+                {"name": "loadAverage_1", "source": "loadAverage/1min", "default": 0.0},
+                {"name": "loadAverage_5", "source": "loadAverage/5min", "default": 0.0},
+                {
+                    "name": "loadAverage_15",
+                    "source": "loadAverage/15min",
+                    "default": 0.0,
+                },
                 {"name": "uptime", "default": "0 days 0 hours 0 minutes 0 seconds"},
                 {"name": "configDirty", "type": "bool", "default": False},
                 {"name": "rebootRequired", "type": "bool", "default": False},

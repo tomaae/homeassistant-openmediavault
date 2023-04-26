@@ -24,6 +24,12 @@ from .const import (
     SCHEMA_SERVICE_KVM_SNAPSHOT,
 )
 
+DEVICE_ATTRIBUTES_CPUUSAGE = [
+    "loadAverage_1",
+    "loadAverage_5",
+    "loadAverage_15",
+]
+
 DEVICE_ATTRIBUTES_FS = [
     "size",
     "available",
@@ -127,6 +133,7 @@ SENSOR_TYPES = {
         data_name="",
         data_uid="",
         data_reference="",
+        data_attributes_list=DEVICE_ATTRIBUTES_CPUUSAGE,
     ),
     "system_memUsage": OMVSensorEntityDescription(
         key="system_memUsage",
