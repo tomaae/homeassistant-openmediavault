@@ -214,7 +214,7 @@ class OMVControllerData(object):
             vals=[
                 {"name": "hostname", "default": "unknown"},
                 {"name": "version", "default": "unknown"},
-                {"name": "cpuUsage", "default": 0},
+                {"name": "cpuUsage", "default": 0.0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
                 {"name": "uptime", "default": "0 days 0 hours 0 minutes 0 seconds"},
@@ -223,7 +223,7 @@ class OMVControllerData(object):
                 {"name": "availablePkgUpdates", "default": 0},
             ],
             ensure_vals=[
-                {"name": "memUsage", "default": 0},
+                {"name": "memUsage", "default": 0.0},
                 {"name": "pkgUpdatesAvailable", "type": "bool", "default": False},
             ],
         )
