@@ -1,4 +1,5 @@
 """API parser for JSON APIs"""
+import re
 from pytz import utc
 from logging import getLogger
 from datetime import datetime
@@ -40,29 +41,34 @@ def from_entry(entry, param, default="") -> str:
         if isinstance(default, str):
             ret = str(ret)
         elif isinstance(default, int):
-            if isinstance(ret, str):
-                if " " in ret:
-                    ret_tmp = ret.split(" ")
-                    ret = ret_tmp[0]
-                elif "/" in ret:
-                    ret_tmp = ret.split("/")
-                    ret = ret_tmp[0]
-                elif ret == "":
+            if not isinstance(ret, int):
+                if ret == "":
                     ret = 0
 
-            ret = int(ret)
+                try:
+                    ret = int(ret)
+                except Exception:
+                    ret = re.search(r"[0-9]+", ret)
+                    if ret:
+                        ret = ret.group()
+                    else:
+                        ret = 0
+
         elif isinstance(default, float):
-            if isinstance(ret, str):
-                if " " in ret:
-                    ret_tmp = ret.split(" ")
-                    ret = ret_tmp[0]
-                elif "/" in ret:
-                    ret_tmp = ret.split("/")
-                    ret = ret_tmp[0]
-                elif ret == "":
+            if not isinstance(ret, float):
+                if ret == "":
                     ret = 0
 
-            ret = round(float(ret), 2)
+                try:
+                    ret = float(ret)
+                except Exception:
+                    ret = re.search(r"[0-9]+[.,]?[0-9]*", ret)
+                    if ret:
+                        ret = ret.group()
+                    else:
+                        ret = 0
+
+            ret = round(ret, 2)
 
     return ret[:255] if isinstance(ret, str) and len(ret) > 255 else ret
 
