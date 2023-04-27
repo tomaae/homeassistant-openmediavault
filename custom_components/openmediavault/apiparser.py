@@ -49,11 +49,7 @@ def from_entry(entry, param, default="") -> str:
                     ret = int(ret)
                 except Exception:
                     ret = re.search(r"[0-9]+", ret)
-                    if ret:
-                        ret = ret.group()
-                    else:
-                        ret = 0
-
+                    ret = ret.group() if ret else 0
         elif isinstance(default, float):
             if not isinstance(ret, float):
                 if ret == "":
@@ -63,10 +59,7 @@ def from_entry(entry, param, default="") -> str:
                     ret = float(ret)
                 except Exception:
                     ret = re.search(r"[0-9]+[.,]?[0-9]*", ret)
-                    if ret:
-                        ret = ret.group()
-                    else:
-                        ret = 0
+                    ret = ret.group() if ret else 0
 
             ret = round(ret, 2)
 
