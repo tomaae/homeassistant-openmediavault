@@ -54,13 +54,6 @@ DEVICE_ATTRIBUTES_DISK = [
 ]
 
 DEVICE_ATTRIBUTES_DISK_SMART = [
-    "devicemodel",
-    "serialnumber",
-    "firmwareversion",
-    "sectorsize",
-    "rotationrate",
-    "writecacheis",
-    "smartsupportis",
     "Raw_Read_Error_Rate",
     "Spin_Up_Time",
     "Start_Stop_Count",
@@ -196,7 +189,7 @@ SENSOR_TYPES = {
         entity_category=None,
         ha_group="Disk",
         data_path="disk",
-        data_attribute="Temperature_Celsius",
+        data_attribute="temperature",
         data_name="devicename",
         data_uid="",
         data_reference="devicename",

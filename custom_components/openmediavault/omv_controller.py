@@ -305,20 +305,13 @@ class OMVControllerData(object):
                 {"name": "isreadonly", "type": "bool", "default": False},
             ],
             ensure_vals=[
-                {"name": "devicemodel", "default": "unknown"},
-                {"name": "serialnumber", "default": "unknown"},
-                {"name": "firmwareversion", "default": "unknown"},
-                {"name": "sectorsize", "default": "unknown"},
-                {"name": "rotationrate", "default": "unknown"},
-                {"name": "writecacheis", "default": "unknown"},
-                {"name": "smartsupportis", "default": "unknown"},
+                {"name": "temperature", "default": 0},
                 {"name": "Raw_Read_Error_Rate", "default": "unknown"},
                 {"name": "Spin_Up_Time", "default": "unknown"},
                 {"name": "Start_Stop_Count", "default": "unknown"},
                 {"name": "Reallocated_Sector_Ct", "default": "unknown"},
                 {"name": "Seek_Error_Rate", "default": "unknown"},
                 {"name": "Load_Cycle_Count", "default": "unknown"},
-                {"name": "Temperature_Celsius", "default": 0},
                 {"name": "UDMA_CRC_Error_Count", "default": "unknown"},
                 {"name": "Multi_Zone_Error_Rate", "default": "unknown"},
             ],
@@ -328,6 +321,22 @@ class OMVControllerData(object):
     #   get_smart
     # ---------------------------
     def get_smart(self):
+        """Get S.M.A.R.T. information from OMV."""
+        tmp_smart_get_list = self.api.query(
+            "Smart", "getList", {"start": 0, "limit": -1}
+        )
+        if "data" in tmp_smart_get_list:
+            tmp_smart_get_list = tmp_smart_get_list["data"]
+
+        self.data["disk"] = parse_api(
+            data=self.data["disk"],
+            source=tmp_smart_get_list,
+            key="devicename",
+            vals=[
+                {"name": "temperature", "default": 0},
+            ],
+        )
+
         for uid in self.data["disk"]:
             if self.data["disk"][uid]["devicename"].startswith("mmcblk"):
                 continue
@@ -337,35 +346,6 @@ class OMVControllerData(object):
 
             if self.data["disk"][uid]["devicename"].startswith("bcache"):
                 continue
-
-            tmp_data = parse_api(
-                data={},
-                source=self.api.query(
-                    "Smart",
-                    "getInformation",
-                    {"devicefile": self.data["disk"][uid]["canonicaldevicefile"]},
-                ),
-                vals=[
-                    {"name": "devicemodel", "default": "unknown"},
-                    {"name": "serialnumber", "default": "unknown"},
-                    {"name": "firmwareversion", "default": "unknown"},
-                    {"name": "sectorsize", "default": "unknown"},
-                    {"name": "rotationrate", "default": "unknown"},
-                    {"name": "writecacheis", "type": "bool", "default": False},
-                    {"name": "smartsupportis", "type": "bool", "default": False},
-                ],
-            )
-
-            if not tmp_data:
-                continue
-
-            self.data["disk"][uid]["devicemodel"] = tmp_data["devicemodel"]
-            self.data["disk"][uid]["serialnumber"] = tmp_data["serialnumber"]
-            self.data["disk"][uid]["firmwareversion"] = tmp_data["firmwareversion"]
-            self.data["disk"][uid]["sectorsize"] = tmp_data["sectorsize"]
-            self.data["disk"][uid]["rotationrate"] = tmp_data["rotationrate"]
-            self.data["disk"][uid]["writecacheis"] = tmp_data["writecacheis"]
-            self.data["disk"][uid]["smartsupportis"] = tmp_data["smartsupportis"]
 
             tmp_data = parse_api(
                 data={},
@@ -391,8 +371,6 @@ class OMVControllerData(object):
                 "Reallocated_Sector_Ct",
                 "Seek_Error_Rate",
                 "Load_Cycle_Count",
-                "Temperature_Celsius",
-                "temperature",
                 "UDMA_CRC_Error_Count",
                 "Multi_Zone_Error_Rate",
             ]
@@ -407,12 +385,7 @@ class OMVControllerData(object):
                             "rawvalue"
                         ].split(" ")[0]
 
-                    if tmp_val == "temperature":
-                        self.data["disk"][uid]["Temperature_Celsius"] = tmp_data[
-                            tmp_val
-                        ]["rawvalue"]
-                    else:
-                        self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
+                    self.data["disk"][uid][tmp_val] = tmp_data[tmp_val]["rawvalue"]
 
     # ---------------------------
     #   get_fs
