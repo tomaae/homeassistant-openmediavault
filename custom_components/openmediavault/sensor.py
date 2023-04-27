@@ -52,7 +52,14 @@ class OMVSensor(OMVEntity, SensorEntity):
         entity_description,
     ):
         super().__init__(inst, uid, omv_controller, entity_description)
-        self._attr_native_value = self._data[self.entity_description.data_attribute]
+        self._attr_suggested_unit_of_measurement = (
+            self.entity_description.suggested_unit_of_measurement
+        )
+
+    @property
+    def native_value(self) -> StateType | date | datetime | Decimal:
+        """Return the value reported by the sensor."""
+        return self._data[self.entity_description.data_attribute]
 
     @property
     def native_unit_of_measurement(self):
