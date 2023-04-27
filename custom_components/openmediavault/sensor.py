@@ -1,8 +1,11 @@
 """OpenMediaVault sensor platform."""
 from logging import getLogger
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Mapping
+from datetime import date, datetime
+from decimal import Decimal
 from homeassistant.components.sensor import SensorEntity
+from homeassistant.helpers.typing import StateType
 from .helper import format_attribute
 from .model import model_async_setup_entry, OMVEntity
 from .sensor_types import (

@@ -13,6 +13,7 @@ from homeassistant.const import (
     CONF_VERIFY_SSL,
 )
 from homeassistant.core import callback
+from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import (
@@ -75,7 +76,7 @@ class OMVControllerData(object):
     # ---------------------------
     #   async_init
     # ---------------------------
-    async def async_init(self):
+    async def async_init(self) -> None:
         self._force_update_callback = async_track_time_interval(
             self.hass, self.force_update, self.option_scan_interval
         )
@@ -113,7 +114,7 @@ class OMVControllerData(object):
     # ---------------------------
     #   async_reset
     # ---------------------------
-    async def async_reset(self):
+    async def async_reset(self) -> bool:
         """Reset dispatchers."""
         for unsub_dispatcher in self.listeners:
             unsub_dispatcher()
@@ -201,6 +202,7 @@ class OMVControllerData(object):
         ):
             await self.hass.async_add_executor_job(self.get_compose)
 
+        async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
 
     # ---------------------------

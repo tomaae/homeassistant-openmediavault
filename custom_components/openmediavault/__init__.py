@@ -1,4 +1,8 @@
 """The OpenMediaVault integration."""
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
+
 from .const import DOMAIN, PLATFORMS
 from .omv_controller import OMVControllerData
 
@@ -6,7 +10,7 @@ from .omv_controller import OMVControllerData
 # ---------------------------
 #   async_setup
 # ---------------------------
-async def async_setup(hass, _config):
+async def async_setup(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up configured OMV Controller."""
     hass.data[DOMAIN] = {}
     return True
@@ -15,7 +19,7 @@ async def async_setup(hass, _config):
 # ---------------------------
 #   update_listener
 # ---------------------------
-async def update_listener(hass, config_entry) -> None:
+async def _async_update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
     """Handle options update."""
     await hass.config_entries.async_reload(config_entry.entry_id)
 
@@ -23,17 +27,23 @@ async def update_listener(hass, config_entry) -> None:
 # ---------------------------
 #   async_setup_entry
 # ---------------------------
-async def async_setup_entry(hass, config_entry):
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up OMV config entry."""
+    hass.data.setdefault(DOMAIN, {})
     controller = OMVControllerData(hass, config_entry)
     await controller.async_hwinfo_update()
     await controller.async_update()
-    await controller.async_init()
 
+    if not controller.data:
+        raise ConfigEntryNotReady()
+
+    await controller.async_init()
     hass.data[DOMAIN][config_entry.entry_id] = controller
 
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
-    config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
+    config_entry.async_on_unload(
+        config_entry.add_update_listener(_async_update_listener)
+    )
 
     return True
 
@@ -41,8 +51,8 @@ async def async_setup_entry(hass, config_entry):
 # ---------------------------
 #   async_unload_entry
 # ---------------------------
-async def async_unload_entry(hass, config_entry):
-    """Unload OMV config entry."""
+async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Unload TrueNAS config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(
         config_entry, PLATFORMS
     )

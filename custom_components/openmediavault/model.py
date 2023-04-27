@@ -5,10 +5,13 @@ from collections.abc import Mapping
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.core import callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, CONF_HOST
 from .helper import format_attribute
 from .const import DOMAIN, ATTRIBUTION
+from .omv_controller import OMVControllerData
 
 _LOGGER = getLogger(__name__)
 
@@ -17,8 +20,13 @@ _LOGGER = getLogger(__name__)
 #   model_async_setup_entry
 # ---------------------------
 async def model_async_setup_entry(
-    hass, config_entry, async_add_entities, sensor_services, sensor_types, dispatcher
-):
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+    sensor_services,
+    sensor_types,
+    dispatcher,
+) -> None:
     inst = config_entry.data[CONF_NAME]
     omv_controller = hass.data[DOMAIN][config_entry.entry_id]
     sensors = {}
@@ -35,8 +43,8 @@ async def model_async_setup_entry(
             omv_controller,
             async_add_entities,
             sensors,
-            dispatcher,
             sensor_types,
+            dispatcher,
         )
 
     omv_controller.listeners.append(
@@ -49,7 +57,12 @@ async def model_async_setup_entry(
 #   model_update_items
 # ---------------------------
 def model_update_items(
-    inst, omv_controller, async_add_entities, sensors, dispatcher, sensor_types
+    inst,
+    omv_controller: OMVControllerData,
+    async_add_entities: AddEntitiesCallback,
+    sensors,
+    sensor_types,
+    dispatcher,
 ):
     def _register_entity(_sensors, _item_id, _uid, _uid_sensor):
         _LOGGER.debug("Updating entity %s", _item_id)
