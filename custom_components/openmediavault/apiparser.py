@@ -47,6 +47,8 @@ def from_entry(entry, param, default="") -> str:
                 elif "/" in ret:
                     ret_tmp = ret.split("/")
                     ret = ret_tmp[0]
+                elif ret == "":
+                    ret = 0
 
             ret = int(ret)
         elif isinstance(default, float):
@@ -57,6 +59,8 @@ def from_entry(entry, param, default="") -> str:
                 elif "/" in ret:
                     ret_tmp = ret.split("/")
                     ret = ret_tmp[0]
+                elif ret == "":
+                    ret = 0
 
             ret = round(float(ret), 2)
 
