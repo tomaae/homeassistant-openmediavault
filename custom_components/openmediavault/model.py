@@ -194,15 +194,22 @@ class OMVEntity:
                 dev_connection_value = dev_connection_value[6:]
                 dev_connection_value = self._data[dev_connection_value]
 
-        return DeviceInfo(
-            connections={(dev_connection, f"{dev_connection_value}")},
-            identifiers={(dev_connection, f"{dev_connection_value}")},
-            default_name=f"{self._inst} {dev_group}",
-            default_manufacturer="OpenMediaVault",
-            sw_version=f"{self._ctrl.data['hwinfo']['version']}",
-            configuration_url=f"http://{self._ctrl.config_entry.data[CONF_HOST]}",
-            via_device=(DOMAIN, f"{self._ctrl.data['hwinfo']['hostname']}"),
-        )
+        if self.entity_description.ha_group == "System":
+            return DeviceInfo(
+                connections={(dev_connection, f"{dev_connection_value}")},
+                identifiers={(dev_connection, f"{dev_connection_value}")},
+                name=f"{self._inst} {dev_group}",
+                manufacturer="OpenMediaVault",
+                sw_version=f"{self._ctrl.data['hwinfo']['version']}",
+                configuration_url=f"http://{self._ctrl.config_entry.data[CONF_HOST]}",
+            )
+        else:
+            return DeviceInfo(
+                connections={(dev_connection, f"{dev_connection_value}")},
+                default_name=f"{self._inst} {dev_group}",
+                default_manufacturer="OpenMediaVault",
+                via_device=(DOMAIN, f"{self._ctrl.data['hwinfo']['hostname']}"),
+            )
 
     @property
     def extra_state_attributes(self) -> Mapping[str, Any]:
