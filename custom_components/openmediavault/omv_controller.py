@@ -300,6 +300,7 @@ class OMVControllerData(object):
                 {"name": "model", "default": "unknown"},
                 {"name": "description", "default": "unknown"},
                 {"name": "serialnumber", "default": "unknown"},
+                {"name": "wwn", "default": "unknown"},
                 {"name": "israid", "type": "bool", "default": False},
                 {"name": "isroot", "type": "bool", "default": False},
                 {"name": "isreadonly", "type": "bool", "default": False},
@@ -345,6 +346,9 @@ class OMVControllerData(object):
                 continue
 
             if self.data["disk"][uid]["devicename"].startswith("bcache"):
+                continue
+
+            if self.data["disk"][uid]["wwn"] == "":
                 continue
 
             tmp_data = parse_api(
