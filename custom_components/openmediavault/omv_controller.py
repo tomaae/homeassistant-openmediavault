@@ -348,7 +348,10 @@ class OMVControllerData(object):
             if self.data["disk"][uid]["devicename"].startswith("bcache"):
                 continue
 
-            if self.data["disk"][uid]["wwn"] == "":
+            if (
+                self.data["disk"][uid]["wwn"] == ""
+                or self.data["disk"][uid]["wwn"] == "unknown"
+            ):
                 continue
 
             tmp_data = parse_api(
