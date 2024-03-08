@@ -4,6 +4,8 @@ import asyncio
 import pytz
 from datetime import datetime, timedelta
 
+from distutils.version import StrictVersion
+
 from homeassistant.const import (
     CONF_HOST,
     CONF_NAME,
@@ -214,9 +216,26 @@ class OMVControllerData(object):
             data=self.data["hwinfo"],
             source=self.api.query("System", "getInformation"),
             vals=[
+                {"name": "version", "default": "unknown"},
+            ],
+        )
+        if not self.api.connected():
+            return
+
+        omv_version_to_compare = StrictVersion("6.7.0")
+        omv_version = StrictVersion(self.data["hwinfo"]["version"].split("-")[0])
+
+        cpuUsage_name = "cpuUtilization"
+        if omv_version < omv_version_to_compare:
+            cpuUsage_name = "cpuUsage"
+
+        self.data["hwinfo"] = parse_api(
+            data=self.data["hwinfo"],
+            source=self.api.query("System", "getInformation"),
+            vals=[
                 {"name": "hostname", "default": "unknown"},
                 {"name": "version", "default": "unknown"},
-                {"name": "cpuUtilization", "default": 0.0},
+                {"name": str(cpuUsage_name), "default": 0.0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
                 {"name": "loadAverage_1", "source": "loadAverage/1min", "default": 0.0},
@@ -236,7 +255,6 @@ class OMVControllerData(object):
                 {"name": "pkgUpdatesAvailable", "type": "bool", "default": False},
             ],
         )
-
         if not self.api.connected():
             return
 
@@ -270,7 +288,7 @@ class OMVControllerData(object):
         uptime_tm = datetime.timestamp(now - timedelta(seconds=tmp_uptime))
         self.data["hwinfo"]["uptimeEpoch"] = utc_from_timestamp(uptime_tm)
 
-        self.data["hwinfo"]["cpuUtilization"] = round(self.data["hwinfo"]["cpuUtilization"], 1)
+        self.data["hwinfo"][str(cpuUsage_name)] = round(self.data["hwinfo"][str(cpuUsage_name)], 1)
         mem = (
             (int(self.data["hwinfo"]["memUsed"]) / int(self.data["hwinfo"]["memTotal"]))
             * 100
