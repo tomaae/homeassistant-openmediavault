@@ -216,7 +216,7 @@ class OMVControllerData(object):
             vals=[
                 {"name": "hostname", "default": "unknown"},
                 {"name": "version", "default": "unknown"},
-                {"name": "cpuUsage", "default": 0.0},
+                {"name": "cpuUtilization", "default": 0.0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
                 {"name": "loadAverage_1", "source": "loadAverage/1min", "default": 0.0},
@@ -270,7 +270,7 @@ class OMVControllerData(object):
         uptime_tm = datetime.timestamp(now - timedelta(seconds=tmp_uptime))
         self.data["hwinfo"]["uptimeEpoch"] = utc_from_timestamp(uptime_tm)
 
-        self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
+        self.data["hwinfo"]["cpuUtilization"] = round(self.data["hwinfo"]["cpuUtilization"], 1)
         mem = (
             (int(self.data["hwinfo"]["memUsed"]) / int(self.data["hwinfo"]["memTotal"]))
             * 100
