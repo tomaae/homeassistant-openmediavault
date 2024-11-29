@@ -51,6 +51,7 @@ DEVICE_ATTRIBUTES_DISK = [
     "israid",
     "isroot",
     "isreadonly",
+    "overallstatus",
 ]
 
 DEVICE_ATTRIBUTES_DISK_SMART = [

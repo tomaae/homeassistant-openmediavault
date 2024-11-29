@@ -335,6 +335,7 @@ class OMVControllerData(object):
             key="devicename",
             vals=[
                 {"name": "temperature", "default": 0},
+                {"name": "overallstatus", "default": "unknown"},
             ],
         )
 
