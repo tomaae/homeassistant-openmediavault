@@ -3,6 +3,10 @@
 import asyncio
 import pytz
 from datetime import datetime, timedelta
+import logging
+
+
+
 
 from homeassistant.const import (
     CONF_HOST,
@@ -28,6 +32,7 @@ from .omv_api import OpenMediaVaultAPI
 
 DEFAULT_TIME_ZONE = None
 
+_LOGGER = logging.getLogger(__name__)
 
 def utc_from_timestamp(timestamp: float) -> datetime:
     """Return a UTC time from a timestamp."""
@@ -56,6 +61,7 @@ class OMVControllerData(object):
             "network": {},
             "kvm": {},
             "compose": {},
+            "temperature": {},
         }
 
         self.listeners = []
@@ -148,6 +154,7 @@ class OMVControllerData(object):
             return
 
         await self.hass.async_add_executor_job(self.get_hwinfo)
+        await self.hass.async_add_executor_job(self.get_cpu_temperature)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_plugin)
         if self.api.connected():
@@ -177,9 +184,10 @@ class OMVControllerData(object):
             return
 
         await self.hass.async_add_executor_job(self.get_hwinfo)
+        await self.hass.async_add_executor_job(self.get_cpu_temperature)
         if self.api.connected():
             await self.hass.async_add_executor_job(self.get_fs)
-
+        
         if not self.option_smart_disable and self.api.connected():
             await self.hass.async_add_executor_job(self.get_smart)
 
@@ -205,18 +213,22 @@ class OMVControllerData(object):
         async_dispatcher_send(self.hass, self.signal_update)
         self.lock.release()
 
+
     # ---------------------------
     #   get_hwinfo
     # ---------------------------
     def get_hwinfo(self):
         """Get hardware info from OMV."""
+        response = self.api.query("System", "getInformation")
+        # _LOGGER.warning("OMV System getInformation response: %s", response)
         self.data["hwinfo"] = parse_api(
             data=self.data["hwinfo"],
             source=self.api.query("System", "getInformation"),
             vals=[
                 {"name": "hostname", "default": "unknown"},
                 {"name": "version", "default": "unknown"},
-                {"name": "cpuUsage", "default": 0.0},
+                {"name": "cpuUtilization", "default": 0.0},
+                {"name": "cputemp", "default": 0.0},
                 {"name": "memTotal", "default": 0},
                 {"name": "memUsed", "default": 0},
                 {"name": "loadAverage_1", "source": "loadAverage/1min", "default": 0.0},
@@ -270,7 +282,9 @@ class OMVControllerData(object):
         uptime_tm = datetime.timestamp(now - timedelta(seconds=tmp_uptime))
         self.data["hwinfo"]["uptimeEpoch"] = utc_from_timestamp(uptime_tm)
 
-        self.data["hwinfo"]["cpuUsage"] = round(self.data["hwinfo"]["cpuUsage"], 1)
+        self.data["hwinfo"]["cpuUtilization"] = round(self.data["hwinfo"]["cpuUtilization"], 1)
+        self.data["hwinfo"]["cputemp"] = round(self.data["hwinfo"]["cputemp"], 1)
+        # _LOGGER.warning("Fetched CPU Temperature: %s", self.data["hwinfo"]["cputemp"])  # Debug log the fetched temperature
         mem = (
             (int(self.data["hwinfo"]["memUsed"]) / int(self.data["hwinfo"]["memTotal"]))
             * 100
@@ -282,6 +296,23 @@ class OMVControllerData(object):
         self.data["hwinfo"]["pkgUpdatesAvailable"] = (
             self.data["hwinfo"]["availablePkgUpdates"] > 0
         )
+    # ---------------------------
+    #   get_cpu_temperature
+    # ---------------------------
+    def get_cpu_temperature(self):
+        """Get CPU temperature from the CpuTemp plug-in."""
+        response = self.api.query("CpuTemp", "get")
+        # _LOGGER.debug("CPU Temperature plug-in response: %s", response)
+
+        if not response:
+            _LOGGER.error("CPU Temperature plug-in API response is empty or invalid")
+            return
+
+        if "cputemp" in response:
+            self.data["hwinfo"]["cputemp"] = response["cputemp"]
+        else:
+            _LOGGER.warning("CPU Temperature data not found in plug-in response: %s", response)
+
 
     # ---------------------------
     #   get_disk
@@ -300,7 +331,6 @@ class OMVControllerData(object):
                 {"name": "model", "default": "unknown"},
                 {"name": "description", "default": "unknown"},
                 {"name": "serialnumber", "default": "unknown"},
-                {"name": "wwn", "default": "unknown"},
                 {"name": "israid", "type": "bool", "default": False},
                 {"name": "isroot", "type": "bool", "default": False},
                 {"name": "isreadonly", "type": "bool", "default": False},
@@ -346,12 +376,6 @@ class OMVControllerData(object):
                 continue
 
             if self.data["disk"][uid]["devicename"].startswith("bcache"):
-                continue
-
-            if (
-                self.data["disk"][uid]["wwn"] == ""
-                or self.data["disk"][uid]["wwn"] == "unknown"
-            ):
                 continue
 
             tmp_data = parse_api(
@@ -547,6 +571,7 @@ class OMVControllerData(object):
                 {"name": "type", "source": "virttype", "default": "unknown"},
                 {"name": "memory", "source": "mem", "default": "unknown"},
                 {"name": "cpu", "default": "unknown"},
+                {"name": "temp", "default": "unknown"},
                 {"name": "state", "default": "unknown"},
                 {"name": "architecture", "source": "arch", "default": "unknown"},
                 {"name": "autostart", "default": "unknown"},

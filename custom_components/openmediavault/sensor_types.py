@@ -24,11 +24,12 @@ from .const import (
     SCHEMA_SERVICE_KVM_SNAPSHOT,
 )
 
-DEVICE_ATTRIBUTES_CPUUSAGE = [
+DEVICE_ATTRIBUTES_CPUUtilization = [
     "loadAverage_1",
     "loadAverage_5",
     "loadAverage_15",
 ]
+
 
 DEVICE_ATTRIBUTES_FS = [
     "size",
@@ -94,6 +95,13 @@ DEVICE_ATTRIBUTES_COMPOSE = [
     "created",
 ]
 
+DEVICE_ATTRIBUTES_TEMPERATURE = [
+    "temp",
+    "temp1",
+    "temp2",
+    "temp3",
+]
+
 
 @dataclass
 class OMVSensorEntityDescription(SensorEntityDescription):
@@ -112,8 +120,8 @@ class OMVSensorEntityDescription(SensorEntityDescription):
 
 
 SENSOR_TYPES = {
-    "system_cpuUsage": OMVSensorEntityDescription(
-        key="system_cpuUsage",
+    "system_cpuUtilization": OMVSensorEntityDescription(
+        key="system_cpuUtilization",
         name="CPU load",
         icon="mdi:speedometer",
         native_unit_of_measurement=PERCENTAGE,
@@ -123,11 +131,11 @@ SENSOR_TYPES = {
         entity_category=None,
         ha_group="System",
         data_path="hwinfo",
-        data_attribute="cpuUsage",
+        data_attribute="cpuUtilization",
         data_name="",
         data_uid="",
         data_reference="",
-        data_attributes_list=DEVICE_ATTRIBUTES_CPUUSAGE,
+        data_attributes_list=DEVICE_ATTRIBUTES_CPUUtilization,
     ),
     "system_memUsage": OMVSensorEntityDescription(
         key="system_memUsage",
@@ -258,6 +266,22 @@ SENSOR_TYPES = {
         data_uid="",
         data_reference="name",
         data_attributes_list=DEVICE_ATTRIBUTES_COMPOSE,
+    ),
+    "temperature": OMVSensorEntityDescription(
+        key="temperature",
+        name="CPU Temperature",
+        icon="mdi:thermometer",
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=1,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=None,
+        ha_group="System",
+        data_path="hwinfo",
+        data_attribute="cputemp",
+        data_name="",
+        data_uid="",
+        data_reference="",
     ),
 }
 
